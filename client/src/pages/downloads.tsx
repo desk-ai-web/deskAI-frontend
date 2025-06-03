@@ -3,8 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Download, Monitor, Smartphone, Apple, AppWindow } from "lucide-react";
-import { SiLinux, SiApple, SiWindows } from "react-icons/si";
+import { Download, Monitor, Smartphone, Apple, AppWindow, Laptop } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
 interface OSInfo {
@@ -67,23 +66,23 @@ export default function Downloads() {
     {
       id: 'mac',
       name: 'macOS',
-      icon: SiApple,
+      icon: Apple,
       requirements: 'macOS 10.14 or later',
       size: '45 MB',
       description: 'Native Apple Silicon and Intel support'
     },
     {
       id: 'windows',
-      name: 'AppWindow',
-      icon: SiWindows,
-      requirements: 'AppWindow 10 or later',
+      name: 'Windows',
+      icon: AppWindow,
+      requirements: 'Windows 10 or later',
       size: '38 MB',
-      description: 'Works with AppWindow 10 and 11'
+      description: 'Works with Windows 10 and 11'
     },
     {
       id: 'linux',
       name: 'Linux',
-      icon: SiLinux,
+      icon: Laptop,
       requirements: 'Ubuntu 18.04+ or equivalent',
       size: '42 MB',
       description: 'AppImage format for universal compatibility'

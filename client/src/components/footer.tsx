@@ -1,5 +1,5 @@
 import { Eye } from "lucide-react";
-import { SiTwitter, SiGithub, SiLinkedin } from "react-icons/si";
+import { SiX, SiGithub, SiLinkedin } from "react-icons/si";
 
 export function Footer() {
   const scrollToSection = (sectionId: string) => {
@@ -28,7 +28,7 @@ export function Footer() {
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
               >
-                <SiTwitter className="w-5 h-5" />
+                <SiX className="w-5 h-5" />
               </a>
               <a 
                 href="https://github.com/deskflow" 
