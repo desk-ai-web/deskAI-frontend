@@ -21,7 +21,7 @@ export default function Landing() {
             Start fixing your screen habits in less than 5 minutes
           </h2>
           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Join thousands of professionals who've improved their eye health and posture with DeskFlow
+            Join thousands of professionals who've improved their eye health and posture with desk.ai
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

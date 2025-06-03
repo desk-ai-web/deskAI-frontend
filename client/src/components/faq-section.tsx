@@ -12,11 +12,11 @@ export function FaqSection() {
     },
     {
       question: "What platforms are supported?",
-      answer: "DeskFlow is available for macOS, Windows, and Linux. The app runs natively on each platform and requires a webcam for full functionality. We support the latest versions of each operating system."
+      answer: "desk.ai is available for macOS, Windows, and Linux. The app runs natively on each platform and requires a webcam for full functionality. We support the latest versions of each operating system."
     },
     {
       question: "How much system resources does it use?",
-      answer: "DeskFlow is optimized for minimal resource usage. It typically uses less than 2% CPU and 50MB RAM, running efficiently in the background without impacting your work performance."
+      answer: "desk.ai is optimized for minimal resource usage. It typically uses less than 2% CPU and 50MB RAM, running efficiently in the background without impacting your work performance."
     },
     {
       question: "Can I customize the reminders?",
@@ -24,7 +24,7 @@ export function FaqSection() {
     },
     {
       question: "Do I need to keep the app running all the time?",
-      answer: "DeskFlow is designed to run in the background and only actively monitors when you're working. You can easily pause tracking when needed, and the app will automatically resume when you return to work."
+      answer: "desk.ai is designed to run in the background and only actively monitors when you're working. You can easily pause tracking when needed, and the app will automatically resume when you return to work."
     },
     {
       question: "What's the difference between the free and paid versions?",
@@ -44,7 +44,7 @@ export function FaqSection() {
             Frequently asked <span className="gradient-text">questions</span>
           </h2>
           <p className="text-xl text-gray-600">
-            Everything you need to know about DeskFlow
+            Everything you need to know about desk.ai
           </p>
         </div>
         

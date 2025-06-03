@@ -45,7 +45,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/downloads', async (req, res) => {
     try {
       const downloadData = insertDownloadSchema.parse(req.body);
-      const userId = req.user?.claims?.sub; // Optional, for logged-in users
+      const userId = (req.user as any)?.claims?.sub; // Optional, for logged-in users
       const ipAddress = req.ip || req.connection.remoteAddress;
       
       const download = await storage.trackDownload({
