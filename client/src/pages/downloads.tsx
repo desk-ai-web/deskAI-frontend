@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Download, Monitor, Smartphone, Apple, AppWindow, Laptop } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import { Navigation } from "@/components/navigation";
 
 interface OSInfo {
   os: string;

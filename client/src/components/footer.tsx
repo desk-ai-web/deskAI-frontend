@@ -20,7 +20,7 @@ export function Footer() {
               </div>
               <span className="text-xl font-bold">desk.ai</span>
             </div>
-            <p className="text-gray-400 mb-6">Fix your screen habits without breaking your flow</p>
+            <p className="text-gray-300 mb-6">Fix your screen habits without breaking your flow</p>
             <div className="flex space-x-4">
               <a 
                 href="https://twitter.com/deskflowapp" 
@@ -51,7 +51,7 @@ export function Footer() {
           
           <div>
             <h4 className="text-lg font-semibold mb-6">Product</h4>
-            <ul className="space-y-4 text-gray-400">
+            <ul className="space-y-4 text-gray-300">
               <li>
                 <button 
                   onClick={() => scrollToSection('features')}
@@ -79,7 +79,7 @@ export function Footer() {
               </li>
               <li>
                 <a 
-                  href="https://changelog.deskflow.app" 
+                  href="https://changelog.desk-ai.app" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors"
@@ -92,7 +92,7 @@ export function Footer() {
           
           <div>
             <h4 className="text-lg font-semibold mb-6">Support</h4>
-            <ul className="space-y-4 text-gray-400">
+            <ul className="space-y-4 text-gray-300">
               <li>
                 <button 
                   onClick={() => scrollToSection('faq')}
@@ -103,7 +103,7 @@ export function Footer() {
               </li>
               <li>
                 <a 
-                  href="https://docs.deskflow.app" 
+                  href="https://help.desk-ai.app" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors"
@@ -113,7 +113,7 @@ export function Footer() {
               </li>
               <li>
                 <a 
-                  href="mailto:support@deskflow.app"
+                  href="mailto:support@desk-ai.app"
                   className="hover:text-white transition-colors"
                 >
                   Contact
@@ -121,7 +121,7 @@ export function Footer() {
               </li>
               <li>
                 <a 
-                  href="https://community.deskflow.app" 
+                  href="https://community.desk-ai.app" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors"
