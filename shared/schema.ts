@@ -23,13 +23,16 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
-// User storage table for Replit Auth
+// User storage table with custom authentication
 export const users = pgTable("users", {
-  id: varchar("id").primaryKey().notNull(),
-  email: varchar("email").unique(),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  email: varchar("email").unique().notNull(),
+  password: varchar("password"), // For email/password auth
+  googleId: varchar("google_id").unique(), // For Google OAuth
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
+  isEmailVerified: boolean("is_email_verified").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -76,7 +79,7 @@ export const usageStats = pgTable("usage_stats", {
   focusSessions: integer("focus_sessions"),
 });
 
-export type UpsertUser = typeof users.$inferInsert;
+export type InsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type SubscriptionPlan = typeof subscriptionPlans.$inferSelect;
 export type UserSubscription = typeof userSubscriptions.$inferSelect;
