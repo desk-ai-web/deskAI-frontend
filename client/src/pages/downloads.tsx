@@ -99,7 +99,7 @@ export default function Downloads() {
               <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center">
                 <Monitor className="w-4 h-4 text-white" />
               </div>
-              <span className="text-xl font-bold gradient-text">DeskFlow</span>
+              <span className="text-xl font-bold gradient-text">desk.ai</span>
             </div>
             
             <div className="flex items-center space-x-4">
@@ -118,7 +118,7 @@ export default function Downloads() {
         {/* Hero */}
         <div className="text-center mb-12">
           <h1 className="text-4xl lg:text-5xl font-bold mb-6">
-            Download <span className="gradient-text">DeskFlow</span>
+            Download <span className="gradient-text">desk.ai</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
             Get the desktop application and start improving your screen habits in minutes. 
@@ -199,7 +199,7 @@ export default function Downloads() {
 
         {/* Features */}
         <div className="bg-white rounded-2xl p-8 shadow-lg">
-          <h2 className="text-2xl font-bold text-center mb-8">What you'll get with DeskFlow</h2>
+          <h2 className="text-2xl font-bold text-center mb-8">What you'll get with desk.ai</h2>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="text-center">
@@ -243,7 +243,7 @@ export default function Downloads() {
           <div className="grid md:grid-cols-3 gap-8">
             <div>
               <h3 className="font-semibold mb-4 flex items-center space-x-2">
-                <SiApple className="w-5 h-5" />
+                <Apple className="w-5 h-5" />
                 <span>macOS</span>
               </h3>
               <ul className="space-y-2 text-sm text-gray-600">
@@ -256,11 +256,11 @@ export default function Downloads() {
             
             <div>
               <h3 className="font-semibold mb-4 flex items-center space-x-2">
-                <SiWindows className="w-5 h-5" />
-                <span>AppWindow</span>
+                <AppWindow className="w-5 h-5" />
+                <span>Windows</span>
               </h3>
               <ul className="space-y-2 text-sm text-gray-600">
-                <li>• AppWindow 10 (v1903) or later</li>
+                <li>• Windows 10 (v1903) or later</li>
                 <li>• x64 processor</li>
                 <li>• 100 MB free disk space</li>
                 <li>• Webcam (built-in or external)</li>
@@ -269,7 +269,7 @@ export default function Downloads() {
             
             <div>
               <h3 className="font-semibold mb-4 flex items-center space-x-2">
-                <SiLinux className="w-5 h-5" />
+                <Laptop className="w-5 h-5" />
                 <span>Linux</span>
               </h3>
               <ul className="space-y-2 text-sm text-gray-600">

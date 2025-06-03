@@ -21,7 +21,7 @@ export function Navigation() {
             <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center">
               <Eye className="w-4 h-4 text-white" />
             </div>
-            <span className="text-xl font-bold gradient-text">DeskFlow</span>
+            <span className="text-xl font-bold gradient-text">desk.ai</span>
           </div>
           
           {/* Desktop Navigation */}

@@ -18,7 +18,7 @@ export function Footer() {
               <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center">
                 <Eye className="w-4 h-4 text-white" />
               </div>
-              <span className="text-xl font-bold">DeskFlow</span>
+              <span className="text-xl font-bold">desk.ai</span>
             </div>
             <p className="text-gray-400 mb-6">Fix your screen habits without breaking your flow</p>
             <div className="flex space-x-4">

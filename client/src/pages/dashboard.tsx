@@ -56,7 +56,7 @@ export default function Dashboard() {
               <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center">
                 <Eye className="w-4 h-4 text-white" />
               </div>
-              <span className="text-xl font-bold gradient-text">DeskFlow</span>
+              <span className="text-xl font-bold gradient-text">desk.ai</span>
             </div>
             
             <div className="flex items-center space-x-4">
@@ -195,7 +195,7 @@ export default function Dashboard() {
                 <Eye className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">No activity yet</h3>
                 <p className="text-gray-600 mb-4">
-                  Download and start using the DeskFlow app to see your screen health statistics here.
+                  Download and start using the desk.ai app to see your screen health statistics here.
                 </p>
                 <Button 
                   className="gradient-bg hover:opacity-90"
