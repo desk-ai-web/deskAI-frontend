@@ -49,8 +49,8 @@ export const subscriptionPlans = pgTable("subscription_plans", {
 
 // User subscriptions
 export const userSubscriptions = pgTable("user_subscriptions", {
-  id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   planId: integer("plan_id").references(() => subscriptionPlans.id).notNull(),
   status: varchar("status").notNull(), // active, cancelled, expired
   startDate: timestamp("start_date").defaultNow(),
