@@ -1,17 +1,40 @@
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import { apiRequest } from "@/lib/queryClient";
 import { Eye, User, Download, BarChart3, Timer, Crown } from "lucide-react";
+import { useLocation } from "wouter";
 
 export default function Dashboard() {
   const { toast } = useToast();
   const { isAuthenticated, isLoading, user } = useAuth();
+  const [, setLocation] = useLocation();
+  const queryClient = useQueryClient();
+
+  // Logout mutation
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      await apiRequest("POST", "/api/logout");
+    },
+    onSuccess: () => {
+      setLocation("/auth");
+    },
+    onError: (error) => {
+      console.error("Logout error:", error);
+      // Even if logout fails, redirect to auth page
+      setLocation("/auth");
+    },
+  });
+
+  const handleLogout = () => {
+    logoutMutation.mutate();
+  };
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -70,9 +93,10 @@ export default function Dashboard() {
               </div>
               <Button 
                 variant="outline" 
-                onClick={() => window.location.href = '/api/logout'}
+                onClick={handleLogout}
+                disabled={logoutMutation.isPending}
               >
-                Sign Out
+                {logoutMutation.isPending ? "Signing Out..." : "Sign Out"}
               </Button>
             </div>
           </div>

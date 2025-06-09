@@ -15,17 +15,15 @@ function Router() {
 
   return (
     <Switch>
+      <Route path="/landing" component={Landing} />
+      <Route path="/auth" component={AuthPage} />
+      <Route path="/downloads" component={Downloads} />
       {isLoading || !isAuthenticated ? (
-        <>
-          <Route path="/" component={Landing} />
-          <Route path="/auth" component={AuthPage} />
-          <Route path="/downloads" component={Downloads} />
-        </>
+        <Route path="/" component={Landing} />
       ) : (
         <>
           <Route path="/" component={Dashboard} />
           <Route path="/dashboard" component={Dashboard} />
-          <Route path="/downloads" component={Downloads} />
         </>
       )}
       <Route component={NotFound} />
