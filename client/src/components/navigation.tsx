@@ -1,9 +1,38 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Eye, Menu, X } from "lucide-react";
+import { Eye, Menu, X, User } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useLocation } from "wouter";
 
 export function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
+  const queryClient = useQueryClient();
+
+  // Logout mutation
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      await apiRequest("POST", "/api/logout");
+    },
+    onSuccess: () => {
+      queryClient.setQueryData(["/api/user"], null);
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      setLocation("/auth");
+    },
+    onError: (error) => {
+      console.error("Logout error:", error);
+      queryClient.setQueryData(["/api/user"], null);
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      setLocation("/auth");
+    },
+  });
+
+  const handleLogout = () => {
+    logoutMutation.mutate();
+  };
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -46,20 +75,48 @@ export function Navigation() {
             </button>
           </div>
           
-          {/* Desktop Auth Buttons */}
+          {/* Desktop Auth Section */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button 
-              variant="ghost" 
-              onClick={() => window.location.href = '/auth'}
-            >
-              Sign In
-            </Button>
-            <Button 
-              className="gradient-bg hover:opacity-90"
-              onClick={() => window.location.href = '/auth'}
-            >
-              Get Started
-            </Button>
+            {isAuthenticated ? (
+              <>
+                <div className="flex items-center space-x-3">
+                  <img 
+                    src={user?.profileImageUrl || `https://ui-avatars.com/api/?name=${user?.firstName}+${user?.lastName}&background=0066FF&color=fff`}
+                    alt="Profile"
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                  <span className="text-sm font-medium">{user?.firstName} {user?.lastName}</span>
+                </div>
+                <Button 
+                  variant="ghost"
+                  onClick={() => setLocation('/dashboard')}
+                >
+                  Dashboard
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={handleLogout}
+                  disabled={logoutMutation.isPending}
+                >
+                  {logoutMutation.isPending ? "Signing Out..." : "Sign Out"}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button 
+                  variant="ghost" 
+                  onClick={() => setLocation('/auth')}
+                >
+                  Sign In
+                </Button>
+                <Button 
+                  className="gradient-bg hover:opacity-90"
+                  onClick={() => setLocation('/auth')}
+                >
+                  Get Started
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -98,19 +155,49 @@ export function Navigation() {
               FAQ
             </button>
             <div className="pt-4 border-t space-y-2">
-              <Button 
-                variant="outline" 
-                className="w-full"
-                onClick={() => window.location.href = '/api/login'}
-              >
-                Sign In
-              </Button>
-              <Button 
-                className="w-full gradient-bg hover:opacity-90"
-                onClick={() => window.location.href = '/api/login'}
-              >
-                Get Started
-              </Button>
+              {isAuthenticated ? (
+                <>
+                  <div className="flex items-center space-x-3 py-2">
+                    <img 
+                      src={user?.profileImageUrl || `https://ui-avatars.com/api/?name=${user?.firstName}+${user?.lastName}&background=0066FF&color=fff`}
+                      alt="Profile"
+                      className="w-8 h-8 rounded-full object-cover"
+                    />
+                    <span className="text-sm font-medium">{user?.firstName} {user?.lastName}</span>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => setLocation('/dashboard')}
+                  >
+                    Dashboard
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={handleLogout}
+                    disabled={logoutMutation.isPending}
+                  >
+                    {logoutMutation.isPending ? "Signing Out..." : "Sign Out"}
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => setLocation('/auth')}
+                  >
+                    Sign In
+                  </Button>
+                  <Button 
+                    className="w-full gradient-bg hover:opacity-90"
+                    onClick={() => setLocation('/auth')}
+                  >
+                    Get Started
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>

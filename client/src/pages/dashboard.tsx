@@ -143,7 +143,15 @@ export default function Dashboard() {
               {subscription?.status !== 'active' && (
                 <Button 
                   className="gradient-bg hover:opacity-90"
-                  onClick={() => window.open('/#pricing', '_blank')}
+                  onClick={() => {
+                    setLocation('/landing');
+                    setTimeout(() => {
+                      const element = document.getElementById('pricing');
+                      if (element) {
+                        element.scrollIntoView({ behavior: 'smooth' });
+                      }
+                    }, 100);
+                  }}
                 >
                   Upgrade to Pro
                 </Button>
