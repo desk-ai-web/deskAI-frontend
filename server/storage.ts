@@ -5,7 +5,7 @@ import {
   downloads,
   usageStats,
   type User,
-  type UpsertUser,
+  type InsertUser,
   type SubscriptionPlan,
   type UserSubscription,
   type Download,
@@ -75,7 +75,7 @@ export class DatabaseStorage implements IStorage {
       .where(eq(subscriptionPlans.isActive, true));
   }
 
-  async getUserSubscription(userId: string): Promise<UserSubscription | undefined> {
+  async getUserSubscription(userId: number): Promise<UserSubscription | undefined> {
     const [subscription] = await db
       .select()
       .from(userSubscriptions)
@@ -90,10 +90,16 @@ export class DatabaseStorage implements IStorage {
     return subscription;
   }
 
-  async trackDownload(downloadData: InsertDownload & { userId?: string; ipAddress?: string }): Promise<Download> {
+  async trackDownload(downloadData: InsertDownload & { userId?: number; ipAddress?: string }): Promise<Download> {
     const [download] = await db
       .insert(downloads)
-      .values(downloadData)
+      .values({
+        platform: downloadData.platform,
+        version: downloadData.version,
+        userId: downloadData.userId,
+        ipAddress: downloadData.ipAddress,
+        downloadedAt: new Date()
+      })
       .returning();
     return download;
   }
@@ -118,7 +124,7 @@ export class DatabaseStorage implements IStorage {
     }));
   }
 
-  async getUserUsageStats(userId: string, limit = 30): Promise<UsageStats[]> {
+  async getUserUsageStats(userId: number, limit = 30): Promise<UsageStats[]> {
     return await db
       .select()
       .from(usageStats)
