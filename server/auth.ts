@@ -83,7 +83,7 @@ export function setupAuth(app: Express) {
   });
 
   // Auth Routes
-  app.post("/api/auth/register", async (req, res, next) => {
+  app.post("/api/register", async (req, res, next) => {
     try {
       const { email, password, firstName, lastName } = req.body;
 
@@ -115,20 +115,20 @@ export function setupAuth(app: Express) {
     }
   });
 
-  app.post("/api/auth/login", passport.authenticate("local"), (req, res) => {
+  app.post("/api/login", passport.authenticate("local"), (req, res) => {
     res.json({ user: req.user, message: "Logged in successfully" });
   });
 
   // OAuth routes will be added here when providers are implemented
 
-  app.post("/api/auth/logout", (req, res, next) => {
+  app.post("/api/logout", (req, res, next) => {
     req.logout((err) => {
       if (err) return next(err);
       res.json({ message: "Logged out successfully" });
     });
   });
 
-  app.get("/api/auth/user", (req, res) => {
+  app.get("/api/user", (req, res) => {
     if (!req.isAuthenticated()) {
       return res.status(401).json({ message: "Not authenticated" });
     }
