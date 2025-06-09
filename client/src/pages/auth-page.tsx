@@ -12,7 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Monitor, ArrowLeft } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
-import { Redirect, Link } from "wouter";
+import { Redirect, Link, useLocation } from "wouter";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -34,6 +34,7 @@ export default function AuthPage() {
   const [activeTab, setActiveTab] = useState("login");
   const queryClient = useQueryClient();
   const { user, isLoading } = useAuth();
+  const [, setLocation] = useLocation();
 
   // Redirect if already authenticated
   if (!isLoading && user) {
@@ -65,6 +66,7 @@ export default function AuthPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      setLocation("/dashboard");
     },
     onError: (error) => {
       console.error("Login error:", error);
@@ -78,6 +80,7 @@ export default function AuthPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      setLocation("/dashboard");
     },
     onError: (error) => {
       console.error("Registration error:", error);
