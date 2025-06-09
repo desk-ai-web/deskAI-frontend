@@ -10,6 +10,7 @@ import { isUnauthorizedError } from "@/lib/authUtils";
 import { apiRequest } from "@/lib/queryClient";
 import { Eye, User, Download, BarChart3, Timer, Crown } from "lucide-react";
 import { useLocation } from "wouter";
+import type { User as UserType } from "@shared/schema";
 
 export default function Dashboard() {
   const { toast } = useToast();
@@ -23,11 +24,15 @@ export default function Dashboard() {
       await apiRequest("POST", "/api/logout");
     },
     onSuccess: () => {
+      queryClient.setQueryData(["/api/user"], null);
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       setLocation("/auth");
     },
     onError: (error) => {
       console.error("Logout error:", error);
-      // Even if logout fails, redirect to auth page
+      // Even if logout fails, clear cache and redirect to auth page
+      queryClient.setQueryData(["/api/user"], null);
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       setLocation("/auth");
     },
   });
