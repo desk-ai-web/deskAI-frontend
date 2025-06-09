@@ -23,26 +23,26 @@ export function Footer() {
             <p className="text-gray-300 mb-6">Fix your screen habits without breaking your flow</p>
             <div className="flex space-x-4">
               <a 
-                href="https://twitter.com/deskflowapp" 
+                href="https://twitter.com/deskai_app" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-gray-300 hover:text-white transition-colors"
               >
                 <SiX className="w-5 h-5" />
               </a>
               <a 
-                href="https://github.com/deskflow" 
+                href="https://github.com/desk-ai" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-gray-300 hover:text-white transition-colors"
               >
                 <SiGithub className="w-5 h-5" />
               </a>
               <a 
-                href="https://linkedin.com/company/deskflow" 
+                href="https://linkedin.com/company/desk-ai" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-gray-300 hover:text-white transition-colors"
               >
                 <SiLinkedin className="w-5 h-5" />
               </a>
@@ -134,10 +134,10 @@ export function Footer() {
           
           <div>
             <h4 className="text-lg font-semibold mb-6">Company</h4>
-            <ul className="space-y-4 text-gray-400">
+            <ul className="space-y-4 text-gray-300">
               <li>
                 <a 
-                  href="https://about.deskflow.app" 
+                  href="https://about.desk-ai.app" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors"
@@ -147,7 +147,7 @@ export function Footer() {
               </li>
               <li>
                 <a 
-                  href="https://deskflow.app/privacy" 
+                  href="https://desk-ai.app/privacy" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors"
@@ -157,7 +157,7 @@ export function Footer() {
               </li>
               <li>
                 <a 
-                  href="https://deskflow.app/terms" 
+                  href="https://desk-ai.app/terms" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors"
@@ -167,7 +167,7 @@ export function Footer() {
               </li>
               <li>
                 <a 
-                  href="https://deskflow.app/security" 
+                  href="https://desk-ai.app/security" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors"
@@ -179,8 +179,8 @@ export function Footer() {
           </div>
         </div>
         
-        <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-          <p>&copy; 2024 DeskFlow. All rights reserved.</p>
+        <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-300">
+          <p>&copy; 2024 desk.ai. All rights reserved.</p>
         </div>
       </div>
     </footer>
