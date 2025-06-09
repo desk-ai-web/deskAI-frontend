@@ -12,7 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Monitor, ArrowLeft } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
-import { Redirect } from "wouter";
+import { Redirect, Link } from "wouter";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -60,23 +60,27 @@ export default function AuthPage() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginData) => {
-      const response = await apiRequest("POST", "/api/auth/login", data);
-      return response.json();
+      const res = await apiRequest("POST", "/api/login", data);
+      return await res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      window.location.href = "/dashboard";
+    },
+    onError: (error) => {
+      console.error("Login error:", error);
     },
   });
 
   const registerMutation = useMutation({
     mutationFn: async (data: RegisterData) => {
-      const response = await apiRequest("POST", "/api/auth/register", data);
-      return response.json();
+      const res = await apiRequest("POST", "/api/register", data);
+      return await res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      window.location.href = "/dashboard";
+    },
+    onError: (error) => {
+      console.error("Registration error:", error);
     },
   });
 
@@ -89,267 +93,278 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex">
-      {/* Left side - Auth forms */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center space-x-3 mb-4">
-              <div className="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center">
-                <Eye className="w-6 h-6 text-white" />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      {/* Header with back to home navigation */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <Link href="/">
+              <Button variant="ghost" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+                <ArrowLeft className="w-4 h-4" />
+                Back to Home
+              </Button>
+            </Link>
+            
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center">
+                <Monitor className="w-4 h-4 text-white" />
               </div>
-              <span className="text-2xl font-bold gradient-text">desk.ai</span>
+              <span className="text-xl font-bold gradient-text">desk.ai</span>
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Welcome back
-            </h1>
-            <p className="text-gray-600">
-              Sign in to your account or create a new one
-            </p>
           </div>
+        </div>
+      </div>
 
-          <Card className="glass border-0 shadow-xl">
-            <CardHeader>
-              <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="login">Sign In</TabsTrigger>
-                  <TabsTrigger value="register">Sign Up</TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </CardHeader>
-            <CardContent>
-              <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsContent value="login" className="space-y-6">
-                  {loginMutation.error && (
-                    <Alert variant="destructive">
-                      <AlertDescription>
-                        {loginMutation.error.message || "Login failed. Please try again."}
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                  
-                  <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
-                    <div>
-                      <Label htmlFor="login-email">Email</Label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="login-email"
-                          type="email"
-                          placeholder="Enter your email"
-                          className="pl-10"
-                          {...loginForm.register("email")}
-                        />
-                      </div>
-                      {loginForm.formState.errors.email && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {loginForm.formState.errors.email.message}
-                        </p>
-                      )}
-                    </div>
+      <div className="flex min-h-[calc(100vh-4rem)]">
+        {/* Left side - Auth forms */}
+        <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
+          <div className="w-full max-w-md">
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Welcome back
+              </h1>
+              <p className="text-gray-600">
+                Sign in to your account or create a new one
+              </p>
+            </div>
+
+            <Card className="glass border-0 shadow-xl">
+              <CardHeader>
+                <Tabs value={activeTab} onValueChange={setActiveTab}>
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="login">Sign In</TabsTrigger>
+                    <TabsTrigger value="register">Sign Up</TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </CardHeader>
+              <CardContent>
+                <Tabs value={activeTab} onValueChange={setActiveTab}>
+                  <TabsContent value="login" className="space-y-6">
+                    {loginMutation.error && (
+                      <Alert variant="destructive">
+                        <AlertDescription>
+                          {loginMutation.error.message || "Login failed. Please try again."}
+                        </AlertDescription>
+                      </Alert>
+                    )}
                     
-                    <div>
-                      <Label htmlFor="login-password">Password</Label>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="login-password"
-                          type={showPassword ? "text" : "password"}
-                          placeholder="Enter your password"
-                          className="pl-10 pr-10"
-                          {...loginForm.register("password")}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                        >
-                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        </button>
-                      </div>
-                      {loginForm.formState.errors.password && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {loginForm.formState.errors.password.message}
-                        </p>
-                      )}
-                    </div>
-                    
-                    <Button
-                      type="submit"
-                      className="w-full gradient-bg"
-                      disabled={loginMutation.isPending}
-                    >
-                      {loginMutation.isPending ? "Signing in..." : "Sign In"}
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </form>
-                </TabsContent>
-                
-                <TabsContent value="register" className="space-y-6">
-                  {registerMutation.error && (
-                    <Alert variant="destructive">
-                      <AlertDescription>
-                        {registerMutation.error.message || "Registration failed. Please try again."}
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                  
-                  <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
                       <div>
-                        <Label htmlFor="register-firstName">First Name</Label>
+                        <Label htmlFor="login-email">Email</Label>
                         <div className="relative">
-                          <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                          <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                           <Input
-                            id="register-firstName"
-                            placeholder="First name"
+                            id="login-email"
+                            type="email"
+                            placeholder="Enter your email"
                             className="pl-10"
-                            {...registerForm.register("firstName")}
+                            {...loginForm.register("email")}
                           />
                         </div>
-                        {registerForm.formState.errors.firstName && (
+                        {loginForm.formState.errors.email && (
                           <p className="text-sm text-red-500 mt-1">
-                            {registerForm.formState.errors.firstName.message}
+                            {loginForm.formState.errors.email.message}
                           </p>
                         )}
                       </div>
                       
                       <div>
-                        <Label htmlFor="register-lastName">Last Name</Label>
+                        <Label htmlFor="login-password">Password</Label>
                         <div className="relative">
-                          <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                          <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                           <Input
-                            id="register-lastName"
-                            placeholder="Last name"
-                            className="pl-10"
-                            {...registerForm.register("lastName")}
+                            id="login-password"
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Enter your password"
+                            className="pl-10 pr-10"
+                            {...loginForm.register("password")}
                           />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                          >
+                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
                         </div>
-                        {registerForm.formState.errors.lastName && (
+                        {loginForm.formState.errors.password && (
                           <p className="text-sm text-red-500 mt-1">
-                            {registerForm.formState.errors.lastName.message}
+                            {loginForm.formState.errors.password.message}
                           </p>
                         )}
                       </div>
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="register-email">Email</Label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="register-email"
-                          type="email"
-                          placeholder="Enter your email"
-                          className="pl-10"
-                          {...registerForm.register("email")}
-                        />
-                      </div>
-                      {registerForm.formState.errors.email && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {registerForm.formState.errors.email.message}
-                        </p>
-                      )}
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="register-password">Password</Label>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="register-password"
-                          type={showPassword ? "text" : "password"}
-                          placeholder="Create a password"
-                          className="pl-10 pr-10"
-                          {...registerForm.register("password")}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                        >
-                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        </button>
-                      </div>
-                      {registerForm.formState.errors.password && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {registerForm.formState.errors.password.message}
-                        </p>
-                      )}
-                    </div>
-                    
-                    <Button
-                      type="submit"
-                      className="w-full gradient-bg"
-                      disabled={registerMutation.isPending}
-                    >
-                      {registerMutation.isPending ? "Creating account..." : "Create Account"}
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </form>
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-          </Card>
+                      
+                      <Button
+                        type="submit"
+                        className="w-full gradient-bg"
+                        disabled={loginMutation.isPending}
+                      >
+                        {loginMutation.isPending ? "Signing in..." : "Sign In"}
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </form>
+                  </TabsContent>
 
-          <div className="text-center mt-6">
-            <p className="text-sm text-gray-600">
-              By signing up, you agree to our{" "}
-              <a href="/terms" className="text-primary hover:underline">
-                Terms of Service
-              </a>{" "}
-              and{" "}
-              <a href="/privacy" className="text-primary hover:underline">
-                Privacy Policy
-              </a>
-            </p>
+                  <TabsContent value="register" className="space-y-6">
+                    {registerMutation.error && (
+                      <Alert variant="destructive">
+                        <AlertDescription>
+                          {registerMutation.error.message || "Registration failed. Please try again."}
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                    
+                    <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="register-firstName">First Name</Label>
+                          <div className="relative">
+                            <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                            <Input
+                              id="register-firstName"
+                              type="text"
+                              placeholder="First name"
+                              className="pl-10"
+                              {...registerForm.register("firstName")}
+                            />
+                          </div>
+                          {registerForm.formState.errors.firstName && (
+                            <p className="text-sm text-red-500 mt-1">
+                              {registerForm.formState.errors.firstName.message}
+                            </p>
+                          )}
+                        </div>
+                        
+                        <div>
+                          <Label htmlFor="register-lastName">Last Name</Label>
+                          <div className="relative">
+                            <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                            <Input
+                              id="register-lastName"
+                              type="text"
+                              placeholder="Last name"
+                              className="pl-10"
+                              {...registerForm.register("lastName")}
+                            />
+                          </div>
+                          {registerForm.formState.errors.lastName && (
+                            <p className="text-sm text-red-500 mt-1">
+                              {registerForm.formState.errors.lastName.message}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="register-email">Email</Label>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                          <Input
+                            id="register-email"
+                            type="email"
+                            placeholder="Enter your email"
+                            className="pl-10"
+                            {...registerForm.register("email")}
+                          />
+                        </div>
+                        {registerForm.formState.errors.email && (
+                          <p className="text-sm text-red-500 mt-1">
+                            {registerForm.formState.errors.email.message}
+                          </p>
+                        )}
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="register-password">Password</Label>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                          <Input
+                            id="register-password"
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Create a password"
+                            className="pl-10 pr-10"
+                            {...registerForm.register("password")}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                          >
+                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
+                        </div>
+                        {registerForm.formState.errors.password && (
+                          <p className="text-sm text-red-500 mt-1">
+                            {registerForm.formState.errors.password.message}
+                          </p>
+                        )}
+                      </div>
+                      
+                      <Button
+                        type="submit"
+                        className="w-full gradient-bg"
+                        disabled={registerMutation.isPending}
+                      >
+                        {registerMutation.isPending ? "Creating account..." : "Create Account"}
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </form>
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
+
+            <div className="text-center mt-6">
+              <p className="text-sm text-gray-600">
+                By signing up, you agree to our{" "}
+                <a href="/terms" className="text-primary hover:underline">
+                  Terms of Service
+                </a>{" "}
+                and{" "}
+                <a href="/privacy" className="text-primary hover:underline">
+                  Privacy Policy
+                </a>
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Right side - Hero section */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 to-purple-700 items-center justify-center p-12">
-        <div className="text-center text-white max-w-lg">
-          <div className="mb-8">
-            <div className="relative">
-              {/* Person at laptop illustration */}
-              <div className="w-64 h-48 mx-auto bg-white/10 rounded-2xl backdrop-blur-sm border border-white/20 flex items-center justify-center mb-6">
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-white/20 rounded-full mx-auto mb-4 flex items-center justify-center">
-                    <User className="w-8 h-8 text-white/80" />
-                  </div>
-                  <div className="w-24 h-16 bg-white/20 rounded-lg mx-auto"></div>
+        {/* Right side - Hero section */}
+        <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary to-blue-600 items-center justify-center p-8 text-white">
+          <div className="max-w-md text-center">
+            <div className="relative mb-8">
+              <div className="w-32 h-32 mx-auto bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                <Monitor className="w-16 h-16 text-white" />
+                
+                {/* Eye blink monitoring indicators */}
+                <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-400 rounded-full flex items-center justify-center animate-pulse">
+                  <Eye className="w-3 h-3 text-white" />
+                </div>
+                
+                {/* Posture monitoring indicator */}
+                <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-blue-400 rounded-full flex items-center justify-center animate-pulse">
+                  <div className="w-2 h-2 bg-white rounded-full"></div>
                 </div>
               </div>
-              
-              {/* Eye blink monitoring indicators */}
-              <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-400 rounded-full flex items-center justify-center animate-pulse">
-                <Eye className="w-3 h-3 text-white" />
-              </div>
-              
-              {/* Posture monitoring indicator */}
-              <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-blue-400 rounded-full flex items-center justify-center animate-pulse">
-                <div className="w-2 h-2 bg-white rounded-full"></div>
-              </div>
             </div>
-          </div>
-          
-          <h2 className="text-3xl font-bold mb-4">
-            Monitor Your Screen Habits
-          </h2>
-          <p className="text-lg text-white/90 mb-6">
-            Track eye blinks, posture, and focus sessions with AI-powered monitoring. 
-            Improve your health while maintaining productivity.
-          </p>
-          
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-              <div className="text-green-400 font-semibold">Eye Tracking</div>
-              <div className="text-white/80">Real-time blink monitoring</div>
-            </div>
-            <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-              <div className="text-blue-400 font-semibold">Posture Alert</div>
-              <div className="text-white/80">Smart posture detection</div>
+            
+            <h2 className="text-3xl font-bold mb-4">
+              Monitor Your Screen Habits
+            </h2>
+            <p className="text-lg text-white/90 mb-6">
+              Track eye blinks, posture, and focus sessions with AI-powered monitoring. 
+              Improve your health while maintaining productivity.
+            </p>
+            
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+                <div className="text-green-400 font-semibold">Eye Tracking</div>
+                <div className="text-white/80">Real-time blink monitoring</div>
+              </div>
+              <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+                <div className="text-blue-400 font-semibold">Posture Alert</div>
+                <div className="text-white/80">Smart posture detection</div>
+              </div>
             </div>
           </div>
         </div>
