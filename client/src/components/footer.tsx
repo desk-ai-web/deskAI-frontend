@@ -26,7 +26,7 @@ export function Footer() {
                 href="https://twitter.com/deskai_app" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-gray-300 hover:text-white transition-colors"
+                className="text-gray-600 hover:text-white transition-colors"
               >
                 <SiX className="w-5 h-5" />
               </a>
@@ -34,7 +34,7 @@ export function Footer() {
                 href="https://github.com/desk-ai" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-gray-300 hover:text-white transition-colors"
+                className="text-gray-600 hover:text-white transition-colors"
               >
                 <SiGithub className="w-5 h-5" />
               </a>
@@ -42,7 +42,7 @@ export function Footer() {
                 href="https://linkedin.com/company/desk-ai" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-gray-300 hover:text-white transition-colors"
+                className="text-gray-600 hover:text-white transition-colors"
               >
                 <SiLinkedin className="w-5 h-5" />
               </a>
@@ -51,7 +51,7 @@ export function Footer() {
           
           <div>
             <h4 className="text-lg font-semibold mb-6">Product</h4>
-            <ul className="space-y-4 text-gray-300">
+            <ul className="space-y-4 text-gray-600">
               <li>
                 <button 
                   onClick={() => scrollToSection('features')}
@@ -92,7 +92,7 @@ export function Footer() {
           
           <div>
             <h4 className="text-lg font-semibold mb-6">Support</h4>
-            <ul className="space-y-4 text-gray-300">
+            <ul className="space-y-4 text-gray-600">
               <li>
                 <button 
                   onClick={() => scrollToSection('faq')}
@@ -134,7 +134,7 @@ export function Footer() {
           
           <div>
             <h4 className="text-lg font-semibold mb-6">Company</h4>
-            <ul className="space-y-4 text-gray-300">
+            <ul className="space-y-4 text-gray-600">
               <li>
                 <a 
                   href="https://about.desk-ai.app" 
@@ -179,7 +179,7 @@ export function Footer() {
           </div>
         </div>
         
-        <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-300">
+        <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-600">
           <p>&copy; 2024 desk.ai. All rights reserved.</p>
         </div>
       </div>
