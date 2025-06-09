@@ -4,12 +4,21 @@ import { Express } from "express";
 import session from "express-session";
 import bcrypt from "bcryptjs";
 import { storage } from "./storage";
-import { User } from "@shared/schema";
+import { User as DatabaseUser } from "@shared/schema";
 import connectPg from "connect-pg-simple";
 
 declare global {
   namespace Express {
-    interface User extends User {}
+    interface User {
+      id: number;
+      email: string;
+      firstName?: string | null;
+      lastName?: string | null;
+      profileImageUrl?: string | null;
+      isEmailVerified?: boolean | null;
+      createdAt?: Date | null;
+      updatedAt?: Date | null;
+    }
   }
 }
 

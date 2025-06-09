@@ -32,7 +32,7 @@ export interface IStorage {
   getDownloadStats(): Promise<{ platform: string; count: number }[]>;
   
   // Usage statistics
-  getUserUsageStats(userId: string, limit?: number): Promise<UsageStats[]>;
+  getUserUsageStats(userId: number, limit?: number): Promise<UsageStats[]>;
 }
 
 export class DatabaseStorage implements IStorage {

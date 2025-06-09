@@ -8,27 +8,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
 
-  // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      
-      // Also get user's subscription
-      const subscription = await storage.getUserSubscription(userId);
-      
-      res.json({
-        ...user,
-        subscription
-      });
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
-  });
+  // Auth routes are handled in setupAuth() from auth.ts
 
   // Subscription plans
   app.get('/api/subscription-plans', async (req, res) => {
@@ -45,7 +25,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/downloads', async (req, res) => {
     try {
       const downloadData = insertDownloadSchema.parse(req.body);
-      const userId = (req.user as any)?.claims?.sub; // Optional, for logged-in users
+      const userId = req.user?.id; // Optional, for logged-in users
       const ipAddress = req.ip || req.connection.remoteAddress;
       
       const download = await storage.trackDownload({
@@ -73,9 +53,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // User usage statistics (protected)
-  app.get('/api/usage-stats', isAuthenticated, async (req: any, res) => {
+  app.get('/api/usage-stats', requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const stats = await storage.getUserUsageStats(userId);
       res.json(stats);
     } catch (error) {
