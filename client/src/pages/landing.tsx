@@ -8,6 +8,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
 
 export default function Landing() {
+  const { isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
+
   return (
     <div className="min-h-screen bg-white">
       <Navigation />
@@ -28,13 +31,13 @@ export default function Landing() {
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button 
-              onClick={() => window.location.href = '/api/login'}
+              onClick={() => isAuthenticated ? setLocation('/dashboard') : setLocation('/auth')}
               className="bg-white text-primary px-8 py-4 rounded-xl text-lg font-semibold hover:shadow-xl transition-all hover:scale-105"
             >
-              Start Free Trial
+              {isAuthenticated ? 'Go to Dashboard' : 'Start Free Trial'}
             </button>
             <button 
-              onClick={() => window.open('/downloads', '_blank')}
+              onClick={() => setLocation('/downloads')}
               className="border-2 border-white text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white hover:text-primary transition-all"
             >
               Download Now
