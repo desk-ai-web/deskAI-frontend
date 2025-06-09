@@ -60,8 +60,8 @@ export const userSubscriptions = pgTable("user_subscriptions", {
 
 // Download tracking
 export const downloads = pgTable("downloads", {
-  id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  userId: integer("user_id").references(() => users.id),
   platform: varchar("platform").notNull(), // mac, windows, linux
   version: varchar("version").notNull(),
   downloadedAt: timestamp("downloaded_at").defaultNow(),
@@ -70,8 +70,8 @@ export const downloads = pgTable("downloads", {
 
 // Usage statistics
 export const usageStats = pgTable("usage_stats", {
-  id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   date: timestamp("date").defaultNow(),
   sessionDuration: integer("session_duration"), // in minutes
   blinkCount: integer("blink_count"),

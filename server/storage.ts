@@ -25,10 +25,10 @@ export interface IStorage {
   
   // Subscription operations
   getSubscriptionPlans(): Promise<SubscriptionPlan[]>;
-  getUserSubscription(userId: string): Promise<UserSubscription | undefined>;
+  getUserSubscription(userId: number): Promise<UserSubscription | undefined>;
   
   // Download operations
-  trackDownload(download: InsertDownload & { userId?: string; ipAddress?: string }): Promise<Download>;
+  trackDownload(download: InsertDownload & { userId?: number; ipAddress?: string }): Promise<Download>;
   getDownloadStats(): Promise<{ platform: string; count: number }[]>;
   
   // Usage statistics
