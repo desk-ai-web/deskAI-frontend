@@ -77,7 +77,7 @@ export default function AuthPage() {
       return await res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
     },
     onError: (error) => {
       console.error("Registration error:", error);
