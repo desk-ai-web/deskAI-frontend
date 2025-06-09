@@ -50,13 +50,13 @@ export function Navigation() {
           <div className="hidden md:flex items-center space-x-4">
             <Button 
               variant="ghost" 
-              onClick={() => window.location.href = '/api/login'}
+              onClick={() => window.location.href = '/auth'}
             >
               Sign In
             </Button>
             <Button 
               className="gradient-bg hover:opacity-90"
-              onClick={() => window.location.href = '/api/login'}
+              onClick={() => window.location.href = '/auth'}
             >
               Get Started
             </Button>
