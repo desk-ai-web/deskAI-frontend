@@ -4,7 +4,7 @@ import { Eye, Menu, X, User } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 
 export function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -50,7 +50,7 @@ export function Navigation() {
             <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center">
               <Eye className="w-4 h-4 text-white" />
             </div>
-            <span className="text-xl font-bold gradient-text">desk.ai</span>
+            <span className="text-xl font-bold gradient-text"><Link href="/">desk.ai</Link></span>
           </div>
           
           {/* Desktop Navigation */}
@@ -106,11 +106,12 @@ export function Navigation() {
                 <Button 
                   variant="ghost" 
                   onClick={() => setLocation('/auth')}
+                  className="hover:bg-primary"
                 >
                   Sign In
                 </Button>
                 <Button 
-                  className="gradient-bg hover:opacity-90"
+                  className="gradient-bg hover:opacity-80"
                   onClick={() => setLocation('/auth')}
                 >
                   Get Started

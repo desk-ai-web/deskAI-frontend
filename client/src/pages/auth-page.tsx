@@ -36,11 +36,6 @@ export default function AuthPage() {
   const { user, isLoading } = useAuth();
   const [, setLocation] = useLocation();
 
-  // Redirect if already authenticated
-  if (!isLoading && user) {
-    return <Redirect to="/" />;
-  }
-
   const loginForm = useForm<LoginData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -64,12 +59,21 @@ export default function AuthPage() {
       const res = await apiRequest("POST", "/api/login", data);
       return await res.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+    onSuccess: async () => {
+      // Wait for user data to be loaded before redirecting
+      await queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      await queryClient.refetchQueries({ queryKey: ["/api/user"] });
       setLocation("/dashboard");
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error("Login error:", error);
+      // Extract meaningful error message from server response
+      if (error.message && error.message.includes(':')) {
+        const serverMessage = error.message.split(':').slice(1).join(':').trim();
+        if (serverMessage) {
+          error.displayMessage = serverMessage;
+        }
+      }
     },
   });
 
@@ -78,12 +82,21 @@ export default function AuthPage() {
       const res = await apiRequest("POST", "/api/register", data);
       return await res.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+    onSuccess: async () => {
+      // Wait for user data to be loaded before redirecting
+      await queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      await queryClient.refetchQueries({ queryKey: ["/api/user"] });
       setLocation("/dashboard");
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error("Registration error:", error);
+      // Extract meaningful error message from server response
+      if (error.message && error.message.includes(':')) {
+        const serverMessage = error.message.split(':').slice(1).join(':').trim();
+        if (serverMessage) {
+          error.displayMessage = serverMessage;
+        }
+      }
     },
   });
 
@@ -95,6 +108,11 @@ export default function AuthPage() {
     registerMutation.mutate(data);
   };
 
+  // Redirect if already authenticated (after all hooks are called)
+  if (!isLoading && user) {
+    return <Redirect to="/" />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Header with back to home navigation */}
@@ -102,7 +120,7 @@ export default function AuthPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/">
-              <Button variant="ghost" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+              <Button variant="ghost" className="flex items-center gap-2 text-gray-600 hover:bg-primary">
                 <ArrowLeft className="w-4 h-4" />
                 Back to Home
               </Button>
@@ -146,7 +164,7 @@ export default function AuthPage() {
                     {loginMutation.error && (
                       <Alert variant="destructive">
                         <AlertDescription>
-                          {loginMutation.error.message || "Login failed. Please try again."}
+                          {loginMutation.error.displayMessage || "Login failed. Please try again."}
                         </AlertDescription>
                       </Alert>
                     )}
@@ -212,7 +230,7 @@ export default function AuthPage() {
                     {registerMutation.error && (
                       <Alert variant="destructive">
                         <AlertDescription>
-                          {registerMutation.error.message || "Registration failed. Please try again."}
+                          {registerMutation.error.displayMessage || "Registration failed. Please try again."}
                         </AlertDescription>
                       </Alert>
                     )}
@@ -365,7 +383,7 @@ export default function AuthPage() {
                 <div className="text-white/80">Real-time blink monitoring</div>
               </div>
               <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-                <div className="text-blue-400 font-semibold">Posture Alert</div>
+                <div className="text-green-400 font-semibold">Posture Alert</div>
                 <div className="text-white/80">Smart posture detection</div>
               </div>
             </div>

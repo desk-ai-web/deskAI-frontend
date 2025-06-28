@@ -1,6 +1,9 @@
+import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { db } from "./db";
+import { users } from "@shared/schema";
 
 const app = express();
 app.use(express.json());
@@ -37,6 +40,14 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Test database connection
+  try {
+    const testUser = await db.select().from(users).limit(1);
+    console.log("Database connection test successful. Found user:", testUser);
+  } catch (error) {
+    console.error("Database connection test failed:", error);
+  }
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
@@ -59,7 +70,7 @@ app.use((req, res, next) => {
   // ALWAYS serve the app on port 5000
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
-  const port = 5000;
+  const port = 3000;
   server.listen({
     port,
     host: "0.0.0.0",

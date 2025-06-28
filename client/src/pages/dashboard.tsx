@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -6,10 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { apiRequest } from "@/lib/queryClient";
-import { Eye, User, Download, BarChart3, Timer, Crown } from "lucide-react";
-import { useLocation } from "wouter";
+import { Eye, User, Download, BarChart3, Timer, Crown, X, Calendar, Clock, Focus, AlertTriangle, Settings, Save } from "lucide-react";
+import { Link, useLocation } from "wouter";
 import type { User as UserType } from "@shared/schema";
 
 export default function Dashboard() {
@@ -17,6 +20,16 @@ export default function Dashboard() {
   const { isAuthenticated, isLoading, user } = useAuth();
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
+  const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  
+  // Form states for settings
+  const [firstName, setFirstName] = useState(user?.firstName || "");
+  const [lastName, setLastName] = useState(user?.lastName || "");
+  const [email, setEmail] = useState(user?.email || "");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   // Logout mutation
   const logoutMutation = useMutation({
@@ -41,20 +54,73 @@ export default function Dashboard() {
     logoutMutation.mutate();
   };
 
+  // Profile update mutation
+  const updateProfileMutation = useMutation({
+    mutationFn: async (profileData: { firstName: string; lastName: string; email: string }) => {
+      return await apiRequest("PUT", "/api/profile", profileData);
+    },
+    onSuccess: (updatedUser) => {
+      queryClient.setQueryData(["/api/user"], updatedUser);
+      toast({
+        title: "Profile Updated",
+        description: "Your profile has been updated successfully.",
+      });
+      setIsSettingsOpen(false);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Update Failed",
+        description: error.message || "Failed to update profile",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Password change mutation
+  const changePasswordMutation = useMutation({
+    mutationFn: async (passwordData: { currentPassword: string; newPassword: string }) => {
+      return await apiRequest("PUT", "/api/change-password", passwordData);
+    },
+    onSuccess: () => {
+      // Refetch user data to ensure everything is in sync
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      toast({
+        title: "Password Changed",
+        description: "Your password has been changed successfully.",
+      });
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setIsSettingsOpen(false);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Password Change Failed",
+        description: error.message || "Failed to change password",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
-      return;
+      // Add a small delay to avoid race conditions with session establishment
+      const timeoutId = setTimeout(() => {
+        // Double-check authentication status after delay
+        if (!isAuthenticated) {
+          toast({
+            title: "Session Expired",
+            description: "Please log in again to continue.",
+            variant: "destructive",
+          });
+          setLocation("/auth");
+        }
+      }, 1000); // Wait 1 second before redirecting
+
+      return () => clearTimeout(timeoutId);
     }
-  }, [isAuthenticated, isLoading, toast]);
+  }, [isAuthenticated, isLoading, toast, setLocation]);
 
   // Fetch usage statistics
   const { data: usageStats, isLoading: statsLoading } = useQuery({
@@ -62,6 +128,57 @@ export default function Dashboard() {
     enabled: isAuthenticated,
     retry: false,
   });
+
+  // Dummy data for preview
+  const dummyStats = [
+    {
+      date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      sessionDuration: 125,
+      blinkCount: 847,
+      postureAlerts: 12,
+      focusSessions: 3
+    },
+    {
+      date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      sessionDuration: 98,
+      blinkCount: 623,
+      postureAlerts: 8,
+      focusSessions: 2
+    },
+    {
+      date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      sessionDuration: 156,
+      blinkCount: 1024,
+      postureAlerts: 15,
+      focusSessions: 4
+    },
+    {
+      date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+      sessionDuration: 87,
+      blinkCount: 542,
+      postureAlerts: 6,
+      focusSessions: 2
+    },
+    {
+      date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      sessionDuration: 134,
+      blinkCount: 789,
+      postureAlerts: 11,
+      focusSessions: 3
+    }
+  ];
+
+  // Use dummy data for now (replace with real usageStats when available)
+  const displayStats = dummyStats;
+
+  // Update form fields when user data loads
+  useEffect(() => {
+    if (user) {
+      setFirstName(user.firstName || "");
+      setLastName(user.lastName || "");
+      setEmail(user.email || "");
+    }
+  }, [user]);
 
   if (isLoading || !isAuthenticated) {
     return (
@@ -71,8 +188,7 @@ export default function Dashboard() {
     );
   }
 
-  const subscription = user?.subscription;
-  const planName = subscription?.status === 'active' ? 'Pro' : 'Free';
+  const planName = 'Free'; // TODO: Fetch subscription from API
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-light to-white">
@@ -84,7 +200,7 @@ export default function Dashboard() {
               <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center">
                 <Eye className="w-4 h-4 text-white" />
               </div>
-              <span className="text-xl font-bold gradient-text">desk.ai</span>
+              <span className="text-xl font-bold gradient-text"><Link href="/">desk.ai</Link></span>
             </div>
             
             <div className="flex items-center space-x-4">
@@ -130,17 +246,14 @@ export default function Dashboard() {
           <CardContent>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <Badge variant={subscription?.status === 'active' ? 'default' : 'secondary'}>
+                <Badge variant='secondary'>
                   {planName}
                 </Badge>
                 <span className="text-sm text-gray-600">
-                  {subscription?.status === 'active' 
-                    ? 'Active subscription' 
-                    : 'Free plan - Upgrade to unlock all features'
-                  }
+                  Free plan - Upgrade to unlock all features
                 </span>
               </div>
-              {subscription?.status !== 'active' && (
+              {true && (
                 <Button 
                   className="gradient-bg hover:opacity-90"
                   onClick={() => {
@@ -174,7 +287,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
           
-          <Card className="glass border-0 hover-lift cursor-pointer">
+          <Card className="glass border-0 hover-lift cursor-pointer" onClick={() => setIsSettingsOpen(true)}>
             <CardContent className="pt-6">
               <div className="flex items-center space-x-3">
                 <User className="w-8 h-8 text-secondary" />
@@ -186,7 +299,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
           
-          <Card className="glass border-0 hover-lift cursor-pointer">
+          <Card className="glass border-0 hover-lift cursor-pointer" onClick={() => setIsAnalyticsOpen(true)}>
             <CardContent className="pt-6">
               <div className="flex items-center space-x-3">
                 <BarChart3 className="w-8 h-8 text-accent" />
@@ -212,19 +325,76 @@ export default function Dashboard() {
               <div className="flex items-center justify-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               </div>
-            ) : usageStats && usageStats.length > 0 ? (
-              <div className="space-y-4">
-                {usageStats.slice(0, 5).map((stat: any, index: number) => (
-                  <div key={index} className="flex items-center justify-between py-2">
-                    <div className="text-sm text-gray-600">
-                      {new Date(stat.date).toLocaleDateString()}
-                    </div>
-                    <div className="flex items-center space-x-6 text-sm">
-                      <span>{stat.sessionDuration || 0}min session</span>
-                      <span>{stat.blinkCount || 0} blinks</span>
-                      <span>{stat.focusSessions || 0} focus sessions</span>
-                    </div>
-                  </div>
+            ) : displayStats && displayStats.length > 0 ? (
+              <div className="space-y-3">
+                {displayStats.slice(0, 5).map((stat: any, index: number) => (
+                  <Card key={index} className="glass border-0 hover-lift transition-all duration-200">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-lg flex items-center justify-center">
+                            <Calendar className="w-5 h-5 text-primary" />
+                          </div>
+                          <div>
+                            <div className="font-medium text-gray-900">
+                              {new Date(stat.date).toLocaleDateString('en-US', { 
+                                weekday: 'short', 
+                                month: 'short', 
+                                day: 'numeric' 
+                              })}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {new Date(stat.date).getFullYear()}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-8 lg:gap-10">
+                          <div className="flex items-center gap-4 text-sm">
+                            <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                              <Clock className="w-4 h-4 text-blue-600" />
+                            </div>
+                            <div>
+                              <div className="font-semibold text-blue-600">{stat.sessionDuration || 0}min</div>
+                              <div className="text-xs text-gray-500">session</div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-4 text-sm">
+                            <div className="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center">
+                              <Eye className="w-4 h-4 text-green-600" />
+                            </div>
+                            <div>
+                              <div className="font-semibold text-green-600">{stat.blinkCount || 0}</div>
+                              <div className="text-xs text-gray-500">blinks</div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-4 text-sm">
+                            <div className="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center">
+                              <Focus className="w-4 h-4 text-purple-600" />
+                            </div>
+                            <div>
+                              <div className="font-semibold text-purple-600">{stat.focusSessions || 0}</div>
+                              <div className="text-xs text-gray-500">focus</div>
+                            </div>
+                          </div>
+
+                          {stat.postureAlerts > 0 && (
+                            <div className="flex items-center gap-4 text-sm">
+                              <div className="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
+                                <AlertTriangle className="w-4 h-4 text-orange-600" />
+                              </div>
+                              <div>
+                                <div className="font-semibold text-orange-600">{stat.postureAlerts}</div>
+                                <div className="text-xs text-gray-500">alerts</div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 ))}
               </div>
             ) : (
@@ -245,6 +415,330 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Analytics Modal */}
+      <Dialog open={isAnalyticsOpen} onOpenChange={setIsAnalyticsOpen}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2">
+              <BarChart3 className="w-5 h-5 text-primary" />
+              <span>Detailed Analytics</span>
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-6">
+            {statsLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+                         ) : displayStats && displayStats.length > 0 ? (
+               <>
+                 {/* Summary Cards */}
+                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                   <Card>
+                     <CardContent className="pt-6">
+                       <div className="text-center">
+                         <div className="text-2xl font-bold text-primary">
+                           {displayStats.reduce((total: number, stat: any) => total + (stat.blinkCount || 0), 0)}
+                         </div>
+                         <div className="text-sm text-gray-600">Total Blinks</div>
+                       </div>
+                     </CardContent>
+                   </Card>
+                   
+                   <Card>
+                     <CardContent className="pt-6">
+                       <div className="text-center">
+                         <div className="text-2xl font-bold text-orange-500">
+                           {displayStats.reduce((total: number, stat: any) => total + (stat.postureAlerts || 0), 0)}
+                         </div>
+                         <div className="text-sm text-gray-600">Posture Alerts</div>
+                       </div>
+                     </CardContent>
+                   </Card>
+                   
+                   <Card>
+                     <CardContent className="pt-6">
+                       <div className="text-center">
+                         <div className="text-2xl font-bold text-green-500">
+                           {displayStats.reduce((total: number, stat: any) => total + (stat.focusSessions || 0), 0)}
+                         </div>
+                         <div className="text-sm text-gray-600">Focus Sessions</div>
+                       </div>
+                     </CardContent>
+                   </Card>
+                 </div>
+
+                 {/* Detailed Daily Stats */}
+                 <Card>
+                   <CardHeader>
+                     <CardTitle>Daily Breakdown</CardTitle>
+                   </CardHeader>
+                   <CardContent>
+                     <div className="space-y-4">
+                       {displayStats.map((stat: any, index: number) => (
+                        <div key={index} className="border rounded-lg p-4">
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="font-semibold">
+                              {new Date(stat.date).toLocaleDateString('en-US', { 
+                                weekday: 'long', 
+                                year: 'numeric', 
+                                month: 'long', 
+                                day: 'numeric' 
+                              })}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              {stat.sessionDuration || 0} min session
+                            </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-3 gap-4 text-sm">
+                            <div className="text-center">
+                              <div className="text-lg font-bold text-primary">{stat.blinkCount || 0}</div>
+                              <div className="text-gray-600">Blinks</div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-lg font-bold text-orange-500">{stat.postureAlerts || 0}</div>
+                              <div className="text-gray-600">Bad Posture</div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-lg font-bold text-green-500">{stat.focusSessions || 0}</div>
+                              <div className="text-gray-600">Focus Sessions</div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            ) : (
+              <div className="text-center py-8">
+                <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">No analytics data available</h3>
+                <p className="text-gray-600 mb-4">
+                  Start using the desk.ai app to generate analytics data about your screen health.
+                </p>
+                <Button 
+                  className="gradient-bg hover:opacity-90"
+                  onClick={() => {
+                    setIsAnalyticsOpen(false);
+                    window.open('/downloads', '_blank');
+                  }}
+                >
+                  Download App
+                </Button>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Account Settings Modal */}
+      <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2">
+              <Settings className="w-5 h-5 text-primary" />
+              <span>Account Settings</span>
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-6">
+            {/* Profile Picture Section */}
+            <div className="text-center">
+              <div className="w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-3">
+                {firstName && lastName ? `${firstName.charAt(0)}${lastName.charAt(0)}` : 
+                 user?.firstName && user?.lastName ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}` :
+                 user?.email ? user.email.charAt(0).toUpperCase() : 'U'}
+              </div>
+              <p className="text-sm text-gray-600">Profile Picture</p>
+            </div>
+
+            {/* Personal Information */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Personal Information</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="firstName">First Name</Label>
+                    <Input
+                      id="firstName"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      placeholder="Enter first name"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="lastName">Last Name</Label>
+                    <Input
+                      id="lastName"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      placeholder="Enter last name"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter email address"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Password Section - Only show if not Google auth */}
+            {!user?.googleId && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Change Password</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="currentPassword">Current Password</Label>
+                    <Input
+                      id="currentPassword"
+                      type="password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      placeholder="Enter current password"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="newPassword">New Password</Label>
+                    <Input
+                      id="newPassword"
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Enter new password"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirm new password"
+                    />
+                  </div>
+                  
+                  {newPassword && confirmPassword && newPassword !== confirmPassword && (
+                    <p className="text-sm text-red-600">Passwords do not match</p>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Account Type Info */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Account Information</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">Login Method</p>
+                    <p className="text-sm text-gray-600">
+                      {user?.googleId ? 'Google OAuth' : 'Email & Password'}
+                    </p>
+                  </div>
+                  <Badge variant={user?.googleId ? 'default' : 'secondary'}>
+                    {user?.googleId ? 'Google' : 'Email'}
+                  </Badge>
+                </div>
+                <Separator className="my-4" />
+                <div>
+                  <p className="font-medium">Member Since</p>
+                  <p className="text-sm text-gray-600">
+                    {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    }) : 'Unknown'}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end space-x-3">
+              <Button 
+                variant="outline" 
+                onClick={() => setIsSettingsOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                className="gradient-bg hover:opacity-90"
+                disabled={updateProfileMutation.isPending || changePasswordMutation.isPending}
+                onClick={async () => {
+                  // Validate form
+                  if (!firstName || !lastName || !email) {
+                    toast({
+                      title: "Validation Error",
+                      description: "Please fill in all required fields",
+                      variant: "destructive",
+                    });
+                    return;
+                  }
+
+                  // Validate password if provided (only for non-Google users)
+                  const shouldChangePassword = !user?.googleId && currentPassword && newPassword;
+                  if (shouldChangePassword) {
+                    if (newPassword !== confirmPassword) {
+                      toast({
+                        title: "Password Validation Error",
+                        description: "New passwords do not match",
+                        variant: "destructive",
+                      });
+                      return;
+                    }
+                    if (newPassword.length < 6) {
+                      toast({
+                        title: "Password Validation Error",
+                        description: "Password must be at least 6 characters long",
+                        variant: "destructive",
+                      });
+                      return;
+                    }
+                  }
+
+                  try {
+                    // Update profile first
+                    await updateProfileMutation.mutateAsync({ firstName, lastName, email });
+                    
+                    // Then change password if needed
+                    if (shouldChangePassword) {
+                      await changePasswordMutation.mutateAsync({ currentPassword, newPassword });
+                    }
+                    
+                    // Close modal after both operations complete
+                    if (!shouldChangePassword) {
+                      setIsSettingsOpen(false);
+                    }
+                  } catch (error) {
+                    // Error handling is already done in the individual mutations
+                    console.error("Settings update error:", error);
+                  }
+                }}
+              >
+                <Save className="w-4 h-4 mr-2" />
+                {updateProfileMutation.isPending || changePasswordMutation.isPending ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

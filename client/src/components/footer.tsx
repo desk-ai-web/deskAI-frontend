@@ -20,7 +20,7 @@ export function Footer() {
               </div>
               <span className="text-xl font-bold">desk.ai</span>
             </div>
-            <p className="text-gray-300 mb-6">Fix your screen habits without breaking your flow</p>
+            <p className="text-gray-600 mb-6">Fix your screen habits without breaking your flow</p>
             <div className="flex space-x-4">
               <a 
                 href="https://twitter.com/deskai_app" 
