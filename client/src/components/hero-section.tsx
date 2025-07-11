@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
+import initialViewImage from "@/assets/initial_view.png";
 
 export function HeroSection() {
   return (
@@ -39,13 +40,13 @@ export function HeroSection() {
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button 
+            {/* <Button 
               size="lg"
               className="gradient-bg hover:opacity-90 text-lg px-8 py-6"
               onClick={() => window.location.href = '/api/login'}
             >
               Start Free Trial
-            </Button>
+            </Button> */}
             <Button 
               size="lg"
               variant="outline"
@@ -60,9 +61,9 @@ export function HeroSection() {
         <div className="relative">
           {/* Modern workspace setup image */}
           <img 
-            src="https://images.unsplash.com/photo-1586953208448-b95a79798f07?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
-            alt="Modern minimalist workspace with computer setup" 
-            className="rounded-2xl shadow-2xl hover-lift animate-float w-full" 
+            src={initialViewImage}
+            alt="DeskAI application interface showing blink tracking and posture monitoring" 
+            className="rounded-2xl shadow-2xl max-h-[580px] object-contain mx-auto" 
           />
           
           {/* Floating UI elements */}

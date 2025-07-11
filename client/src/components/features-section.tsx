@@ -1,5 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, Ruler, Monitor, Settings, Spline, Sliders } from "lucide-react";
+import multiScreenImage from "@/assets/multi-screen.png";
+import tailoredImage from "@/assets/tailored.png";
 
 export function FeaturesSection() {
   return (
@@ -56,8 +58,8 @@ export function FeaturesSection() {
           <div className="relative">
             {/* Eye strain relief image */}
             <img 
-              src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
-              alt="Person taking a break from computer screen to rest eyes" 
+              src={multiScreenImage}
+              alt="Multi-screen setup showing DeskAI monitoring across multiple displays" 
               className="rounded-2xl shadow-2xl hover-lift w-full" 
             />
           </div>
@@ -68,8 +70,8 @@ export function FeaturesSection() {
           <div className="relative order-2 lg:order-1">
             {/* Healthy posture at desk image */}
             <img 
-              src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
-              alt="Person maintaining good posture while working at desk" 
+              src={tailoredImage}
+              alt="Tailored posture and movement tracking interface showing customizable settings" 
               className="rounded-2xl shadow-2xl hover-lift w-full" 
             />
           </div>

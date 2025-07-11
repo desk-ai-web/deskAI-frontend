@@ -83,17 +83,17 @@ export function FaqSection() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button 
-              onClick={() => window.open('mailto:support@deskflow.app', '_blank')}
+              onClick={() => window.open('mailto:gopimaheshmehta@gmail.com', '_blank')}
               className="text-primary hover:underline"
             >
               Contact Support
             </button>
-            <button 
+            {/* <button 
               onClick={() => window.open('https://docs.deskflow.app', '_blank')}
               className="text-primary hover:underline"
             >
               View Documentation
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

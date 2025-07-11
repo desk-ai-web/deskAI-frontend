@@ -41,12 +41,12 @@ app.use((req, res, next) => {
 
 (async () => {
   // Test database connection
-  try {
-    const testUser = await db.select().from(users).limit(1);
-    console.log("Database connection test successful. Found user:", testUser);
-  } catch (error) {
-    console.error("Database connection test failed:", error);
-  }
+  // try {
+  //   const testUser = await db.select().from(users).limit(1);
+  //   console.log("Database connection test successful.");
+  // } catch (error) {
+  //   console.error("Database connection test failed:", error);
+  // }
 
   const server = await registerRoutes(app);
 

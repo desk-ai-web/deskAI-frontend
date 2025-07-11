@@ -103,19 +103,19 @@ export function Navigation() {
               </>
             ) : (
               <>
-                <Button 
+                {/* <Button 
                   variant="ghost" 
                   onClick={() => setLocation('/auth')}
                   className="hover:bg-primary"
                 >
                   Sign In
-                </Button>
-                <Button 
+                </Button> */}
+                {/* <Button 
                   className="gradient-bg hover:opacity-80"
                   onClick={() => setLocation('/auth')}
                 >
                   Get Started
-                </Button>
+                </Button> */}
               </>
             )}
           </div>
@@ -184,13 +184,13 @@ export function Navigation() {
                 </>
               ) : (
                 <>
-                  <Button 
+                  {/* <Button 
                     variant="outline" 
                     className="w-full"
                     onClick={() => setLocation('/auth')}
                   >
                     Sign In
-                  </Button>
+                  </Button> */}
                   <Button 
                     className="w-full gradient-bg hover:opacity-90"
                     onClick={() => setLocation('/auth')}

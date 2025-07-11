@@ -30,12 +30,12 @@ export default function Landing() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button 
+            {/* <button 
               onClick={() => isAuthenticated ? setLocation('/dashboard') : setLocation('/auth')}
               className="bg-white text-primary px-8 py-4 rounded-xl text-lg font-semibold hover:shadow-xl transition-all hover:scale-105"
             >
               {isAuthenticated ? 'Go to Dashboard' : 'Start Free Trial'}
-            </button>
+            </button> */}
             <button 
               onClick={() => setLocation('/downloads')}
               className="border-2 border-white text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white hover:text-primary transition-all"

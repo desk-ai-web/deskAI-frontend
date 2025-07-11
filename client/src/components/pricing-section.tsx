@@ -20,7 +20,7 @@ export function PricingSection() {
     },
     {
       name: "Pro",
-      price: 9,
+      price: 2.99,
       description: "For serious professionals",
       features: [
         "Advanced AI tracking",
@@ -36,7 +36,7 @@ export function PricingSection() {
     },
     {
       name: "Team",
-      price: 19,
+      price: 9.99,
       description: "For teams and organizations",
       features: [
         "Everything in Pro",
@@ -54,10 +54,12 @@ export function PricingSection() {
   const handlePlanSelect = (planName: string) => {
     if (planName === "Team") {
       // Open contact form or redirect to sales
-      window.open('mailto:sales@deskflow.app?subject=Team Plan Inquiry', '_blank');
+      window.open('mailto:gopimaheshmehta@gmail.com?subject=Team Plan Inquiry', '_blank');
     } else {
-      // Redirect to signup
-      window.location.href = '/api/login';
+      // // Redirect to signup
+      // window.location.href = '/api/login';
+      // Redirect to downloads
+      window.location.href = '/downloads';
     }
   };
 

@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Download, Monitor, Smartphone, Apple, AppWindow, Laptop } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { Navigation } from "@/components/navigation";
+import { Link } from "wouter";
 
 interface OSInfo {
   os: string;
@@ -100,16 +101,16 @@ export default function Downloads() {
               <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center">
                 <Monitor className="w-4 h-4 text-white" />
               </div>
-              <span className="text-xl font-bold gradient-text">desk.ai</span>
+              <span className="text-xl font-bold gradient-text"><Link href="/">desk.ai</Link></span>
             </div>
             
             <div className="flex items-center space-x-4">
               <Button variant="outline" onClick={() => window.location.href = '/'}>
                 Back to Home
               </Button>
-              <Button onClick={() => window.location.href = '/api/login'}>
+              {/* <Button onClick={() => window.location.href = '/api/login'}>
                 Sign In
-              </Button>
+              </Button> */}
             </div>
           </div>
         </div>
