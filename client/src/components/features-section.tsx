@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Eye, Ruler, Monitor, Settings, Spline, Sliders } from "lucide-react";
 import multiScreenImage from "@/assets/multi-screen.png";
 import tailoredImage from "@/assets/tailored.png";
@@ -24,7 +24,7 @@ export function FeaturesSection() {
                   <Eye className="w-8 h-8 text-primary mt-1" />
                   <div>
                     <h3 className="text-xl font-semibold mb-3">Auto-detects blinking patterns</h3>
-                    <p className="text-gray-600">Advanced computer vision tracks your natural blinking rate and reminds you when it's time to blink more</p>
+                    <p className="text-gray-600">Advanced computer vision tracks your natural blinking rate and reminds you when it&apos;s time to blink more</p>
                   </div>
                 </div>
               </CardContent>
@@ -67,7 +67,7 @@ export function FeaturesSection() {
         
         {/* Posture Section */}
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <div className="relative order-2 lg:order-1">
+          <div className="relative order-2 lg:order-1 mt-24">
             {/* Healthy posture at desk image */}
             <img 
               src={tailoredImage}

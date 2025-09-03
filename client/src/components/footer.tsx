@@ -1,5 +1,6 @@
 import { Eye } from "lucide-react";
 import { SiX, SiGithub, SiLinkedin } from "react-icons/si";
+import { Link } from "wouter";
 
 export function Footer() {
   const scrollToSection = (sectionId: string) => {
@@ -93,7 +94,7 @@ export function Footer() {
               </li>
               <li>
                 <a 
-                  href="mailto:gopimaheshmehta@gmail.com"
+                  href="mailto:contact@desk-ai.app"
                   className="hover:text-primary transition-colors"
                 >
                   Contact
@@ -106,34 +107,20 @@ export function Footer() {
             <h4 className="text-lg font-semibold mb-6">Company</h4>
             <ul className="space-y-4 text-gray-600">
               <li>
-                <a 
-                  href="https://about.desk-ai.app" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="hover:text-primary transition-colors"
-                >
-                  About
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="https://desk-ai.app/privacy" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
+                <Link 
+                  href="/privacy"
                   className="hover:text-primary transition-colors"
                 >
                   Privacy
-                </a>
+                </Link>
               </li>
               <li>
-                <a 
-                  href="https://desk-ai.app/terms" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
+                <Link 
+                  href="/terms"
                   className="hover:text-primary transition-colors"
                 >
                   Terms
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

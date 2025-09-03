@@ -2,41 +2,51 @@ import {
   users,
   subscriptionPlans,
   userSubscriptions,
+  stripeWebhookEvents,
   downloads,
   usageStats,
   type User,
   type InsertUser,
   type SubscriptionPlan,
   type UserSubscription,
+  type StripeWebhookEvent,
   type Download,
   type UsageStats,
   type InsertDownload,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, inArray } from "drizzle-orm";
 
 export interface IStorage {
   // User operations for custom auth
-  getUser(id: number): Promise<User | undefined>;
+  getUser(id: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserByGoogleId(googleId: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  updateUser(id: number, user: Partial<InsertUser>): Promise<User>;
+  updateUser(id: string, user: Partial<InsertUser>): Promise<User>;
   
   // Subscription operations
   getSubscriptionPlans(): Promise<SubscriptionPlan[]>;
-  getUserSubscription(userId: number): Promise<UserSubscription | undefined>;
+  getSubscriptionPlanById(id: string): Promise<SubscriptionPlan | undefined>;
+  getUserSubscription(userId: string): Promise<UserSubscription | undefined>;
+  getUserSubscriptionByStripeId(stripeSubscriptionId: string): Promise<UserSubscription | undefined>;
+  createUserSubscription(subscriptionData: Partial<UserSubscription>): Promise<UserSubscription>;
+  updateUserSubscription(id: string, subscriptionData: Partial<UserSubscription>): Promise<UserSubscription>;
+  
+  // Stripe webhook operations
+  createWebhookEvent(eventData: Partial<StripeWebhookEvent>): Promise<StripeWebhookEvent>;
+  markWebhookEventProcessed(stripeEventId: string): Promise<void>;
   
   // Download operations
-  trackDownload(download: InsertDownload & { userId?: number; ipAddress?: string }): Promise<Download>;
+  trackDownload(download: InsertDownload & { userId?: string; ipAddress?: string }): Promise<Download>;
   getDownloadStats(): Promise<{ platform: string; count: number }[]>;
   
   // Usage statistics
-  getUserUsageStats(userId: number, limit?: number): Promise<UsageStats[]>;
+  getUserUsageStats(userId: string, limit?: number): Promise<UsageStats[]>;
 }
 
 export class DatabaseStorage implements IStorage {
-  async getUser(id: number): Promise<User | undefined> {
+  async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user;
   }
@@ -59,7 +69,7 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async updateUser(id: number, userData: Partial<InsertUser>): Promise<User> {
+  async updateUser(id: string, userData: Partial<InsertUser>): Promise<User> {
     const [user] = await db
       .update(users)
       .set({ ...userData, updatedAt: new Date() })
@@ -75,22 +85,65 @@ export class DatabaseStorage implements IStorage {
       .where(eq(subscriptionPlans.isActive, true));
   }
 
-  async getUserSubscription(userId: number): Promise<UserSubscription | undefined> {
+  async getSubscriptionPlanById(id: string): Promise<SubscriptionPlan | undefined> {
+    const [plan] = await db
+      .select()
+      .from(subscriptionPlans)
+      .where(eq(subscriptionPlans.id, id));
+    return plan;
+  }
+
+  async getUserSubscription(userId: string): Promise<UserSubscription | undefined> {
     const [subscription] = await db
       .select()
       .from(userSubscriptions)
-      .where(
-        and(
-          eq(userSubscriptions.userId, userId),
-          eq(userSubscriptions.status, "active")
-        )
-      )
+      .where(eq(userSubscriptions.userId, userId))
       .orderBy(desc(userSubscriptions.createdAt))
       .limit(1);
     return subscription;
   }
 
-  async trackDownload(downloadData: InsertDownload & { userId?: number; ipAddress?: string }): Promise<Download> {
+  async getUserSubscriptionByStripeId(stripeSubscriptionId: string): Promise<UserSubscription | undefined> {
+    const [subscription] = await db
+      .select()
+      .from(userSubscriptions)
+      .where(eq(userSubscriptions.stripeSubscriptionId, stripeSubscriptionId));
+    return subscription;
+  }
+
+  async createUserSubscription(subscriptionData: Partial<UserSubscription>): Promise<UserSubscription> {
+    const [subscription] = await db
+      .insert(userSubscriptions)
+      .values(subscriptionData as any)
+      .returning();
+    return subscription;
+  }
+
+  async updateUserSubscription(id: string, subscriptionData: Partial<UserSubscription>): Promise<UserSubscription> {
+    const [subscription] = await db
+      .update(userSubscriptions)
+      .set({ ...subscriptionData, updatedAt: new Date() })
+      .where(eq(userSubscriptions.id, id))
+      .returning();
+    return subscription;
+  }
+
+  async createWebhookEvent(eventData: Partial<StripeWebhookEvent>): Promise<StripeWebhookEvent> {
+    const [event] = await db
+      .insert(stripeWebhookEvents)
+      .values(eventData as any)
+      .returning();
+    return event;
+  }
+
+  async markWebhookEventProcessed(stripeEventId: string): Promise<void> {
+    await db
+      .update(stripeWebhookEvents)
+      .set({ processed: true })
+      .where(eq(stripeWebhookEvents.stripeEventId, stripeEventId));
+  }
+
+  async trackDownload(downloadData: InsertDownload & { userId?: string; ipAddress?: string }): Promise<Download> {
     const [download] = await db
       .insert(downloads)
       .values({
@@ -124,7 +177,7 @@ export class DatabaseStorage implements IStorage {
     }));
   }
 
-  async getUserUsageStats(userId: number, limit = 30): Promise<UsageStats[]> {
+  async getUserUsageStats(userId: string, limit = 30): Promise<UsageStats[]> {
     return await db
       .select()
       .from(usageStats)

@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Download, Monitor, Smartphone, Apple, AppWindow, Laptop } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { Navigation } from "@/components/navigation";
-import { Link } from "wouter";
+// Note: Link is available but not currently used
+// import { Link } from "wouter";
 
 interface OSInfo {
   os: string;
@@ -93,30 +94,9 @@ export default function Downloads() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-light to-white">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center">
-                <Monitor className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-xl font-bold gradient-text"><Link href="/">desk.ai</Link></span>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <Button variant="outline" onClick={() => window.location.href = '/'}>
-                Back to Home
-              </Button>
-              {/* <Button onClick={() => window.location.href = '/api/login'}>
-                Sign In
-              </Button> */}
-            </div>
-          </div>
-        </div>
-      </div>
+      <Navigation />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
         {/* Hero */}
         <div className="text-center mb-12">
           <h1 className="text-4xl lg:text-5xl font-bold mb-6">
@@ -201,7 +181,7 @@ export default function Downloads() {
 
         {/* Features */}
         <div className="bg-white rounded-2xl p-8 shadow-lg">
-          <h2 className="text-2xl font-bold text-center mb-8">What you'll get with desk.ai</h2>
+          <h2 className="text-2xl font-bold text-center mb-8">What you&apos;ll get with desk.ai</h2>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="text-center">

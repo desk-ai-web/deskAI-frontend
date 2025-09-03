@@ -8,7 +8,7 @@ export function FaqSection() {
   const faqs = [
     {
       question: "Is my webcam data really private?",
-      answer: "Yes, absolutely. All video processing happens locally on your device using advanced computer vision. No webcam data, images, or video ever leaves your computer. We only store anonymized usage statistics to help improve the app."
+      answer: "Yes, absolutely. All video processing happens locally on your device using advanced computer vision. No webcam data, images, or video ever leaves your computer."
     },
     {
       question: "What platforms are supported?",
@@ -20,15 +20,15 @@ export function FaqSection() {
     },
     {
       question: "Can I customize the reminders?",
-      answer: "Absolutely! You can adjust reminder frequency, sensitivity levels, and choose different reminder styles. The Pro version offers advanced customization options, and the app learns your preferences to adapt to your workflow over time."
+      answer: "Absolutely! You can adjust reminder frequency, sensitivity levels, and choose different reminder styles."
     },
     {
       question: "Do I need to keep the app running all the time?",
       answer: "desk.ai is designed to run in the background and only actively monitors when you're working. You can easily pause tracking when needed, and the app will automatically resume when you return to work."
     },
     {
-      question: "What's the difference between the free and paid versions?",
-      answer: "The free version includes basic blink tracking and simple reminders. Pro adds advanced AI tracking, posture monitoring, detailed analytics, multi-screen support, and customizable settings. Team plans include collaboration features and admin controls."
+      question: "What&apos;s the difference between the free and paid versions?",
+                  answer: "The free version includes trial for fourteen days post that you would need to purchase the pro version for €2.99/month to continue using the app."
     }
   ];
 
@@ -83,7 +83,7 @@ export function FaqSection() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button 
-              onClick={() => window.open('mailto:gopimaheshmehta@gmail.com', '_blank')}
+              onClick={() => window.open('mailto:contact@desk-ai.app', '_blank')}
               className="text-primary hover:underline"
             >
               Contact Support

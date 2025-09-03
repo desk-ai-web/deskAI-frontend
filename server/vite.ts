@@ -19,7 +19,11 @@ export function log(message: string, source = "express") {
     hour12: true,
   });
 
-  console.log(`${formattedTime} [${source}] ${message}`);
+  // Note: This function is used for development logging
+  // In production, use the Winston logger instead
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`${formattedTime} [${source}] ${message}`);
+  }
 }
 
 export async function setupVite(app: Express, server: Server) {

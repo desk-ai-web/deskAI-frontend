@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -9,11 +9,11 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { isUnauthorizedError } from "@/lib/authUtils";
 import { apiRequest } from "@/lib/queryClient";
-import { Eye, User, Download, BarChart3, Timer, Crown, X, Calendar, Clock, Focus, AlertTriangle, Settings, Save } from "lucide-react";
-import { Link, useLocation } from "wouter";
-import type { User as UserType } from "@shared/schema";
+import { Eye, User, Download, BarChart3, Timer, Calendar, Clock, Focus, AlertTriangle, Settings, Save } from "lucide-react";
+import { useLocation } from "wouter";
+import { SubscriptionManager } from "@/components/subscription-manager";
+import { Navigation } from "@/components/navigation";
 
 export default function Dashboard() {
   const { toast } = useToast();
@@ -30,29 +30,31 @@ export default function Dashboard() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isUploadingProfilePicture, setIsUploadingProfilePicture] = useState(false);
 
-  // Logout mutation
-  const logoutMutation = useMutation({
-    mutationFn: async () => {
-      await apiRequest("POST", "/api/logout");
-    },
-    onSuccess: () => {
-      queryClient.setQueryData(["/api/user"], null);
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      setLocation("/auth");
-    },
-    onError: (error) => {
-      console.error("Logout error:", error);
-      // Even if logout fails, clear cache and redirect to auth page
-      queryClient.setQueryData(["/api/user"], null);
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      setLocation("/auth");
-    },
-  });
+  // TODO: Implement logout functionality when needed
+  // const logoutMutation = useMutation({
+  //   mutationFn: async () => {
+  //     await apiRequest("POST", "/api/logout");
+  //   },
+  //   onSuccess: () => {
+  //     queryClient.setQueryData(["/api/user"], null);
+  //     queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+  //     setLocation("/auth");
+  //   },
+  //   onError: (error) => {
+  //     console.error("Logout error:", error);
+  //     // Even if logout fails, clear cache and redirect to auth page
+  //     queryClient.setQueryData(["/api/user"], null);
+  //     queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+  //     setLocation("/auth");
+  //   },
+  // });
 
-  const handleLogout = () => {
-    logoutMutation.mutate();
-  };
+  // TODO: Implement logout functionality when needed
+  // const handleLogout = () => {
+  //   logoutMutation.mutate();
+  // };
 
   // Profile update mutation
   const updateProfileMutation = useMutation({
@@ -102,6 +104,111 @@ export default function Dashboard() {
     },
   });
 
+  // Profile picture upload mutation
+  const uploadProfilePictureMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('profilePicture', file);
+      
+      const response = await fetch('/api/upload-profile-picture', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        const contentType = response.headers.get('content-type');
+        
+        if (contentType && contentType.includes('application/json')) {
+          const error = await response.json();
+          throw new Error(error.message || 'Failed to upload profile picture');
+        } else {
+          const text = await response.text();
+          
+          // Check if it's an authentication error (HTML login page)
+          if (text.includes('<!DOCTYPE') || text.includes('<html')) {
+            throw new Error('401: Not authenticated');
+          }
+          
+          throw new Error('Server error occurred');
+        }
+      }
+      
+      return await response.json();
+    },
+    onSuccess: (updatedUser) => {
+      queryClient.setQueryData(["/api/user"], updatedUser);
+      toast({
+        title: "Profile Picture Updated",
+        description: "Your profile picture has been updated successfully.",
+      });
+    },
+    onError: (error: any) => {
+      // Check if it's an authentication error
+      if (error.message?.includes('401') || error.message?.includes('Not authenticated')) {
+        toast({
+          title: "Authentication Required",
+          description: "Please log in to upload a profile picture.",
+          variant: "destructive",
+        });
+        // Redirect to auth page
+        setLocation("/auth");
+        return;
+      }
+      
+      toast({
+        title: "Upload Failed",
+        description: error.message || "Failed to upload profile picture",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Profile picture upload handler
+  const handleProfilePictureUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to upload a profile picture.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid File Type",
+        description: "Please select an image file.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      toast({
+        title: "File Too Large",
+        description: "Please select an image smaller than 2MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUploadingProfilePicture(true);
+    try {
+      await uploadProfilePictureMutation.mutateAsync(file);
+    } finally {
+      setIsUploadingProfilePicture(false);
+      // Clear the input
+      event.target.value = '';
+    }
+  };
+
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -123,11 +230,12 @@ export default function Dashboard() {
   }, [isAuthenticated, isLoading, toast, setLocation]);
 
   // Fetch usage statistics
-  const { data: usageStats, isLoading: statsLoading } = useQuery({
+  const { data: _usageStats, isLoading: statsLoading } = useQuery({
     queryKey: ["/api/usage-stats"],
     enabled: isAuthenticated,
     retry: false,
   });
+  // TODO: Use _usageStats data instead of dummyStats when real data is available
 
   // Dummy data for preview
   const dummyStats = [
@@ -188,128 +296,69 @@ export default function Dashboard() {
     );
   }
 
-  const planName = 'Free'; // TODO: Fetch subscription from API
+  // TODO: Fetch subscription from API and use planName
+  const _planName = 'Free';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-light to-white">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center">
-                <Eye className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-xl font-bold gradient-text"><Link href="/">desk.ai</Link></span>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <img 
-                  src={user?.profileImageUrl || `https://ui-avatars.com/api/?name=${user?.firstName}+${user?.lastName}&background=0066FF&color=fff`}
-                  alt="Profile"
-                  className="w-8 h-8 rounded-full object-cover"
-                />
-                <span className="text-sm font-medium">{user?.firstName} {user?.lastName}</span>
-              </div>
-              <Button 
-                variant="outline" 
-                onClick={handleLogout}
-                disabled={logoutMutation.isPending}
-              >
-                {logoutMutation.isPending ? "Signing Out..." : "Sign Out"}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-light to-white dark:from-gray-900 dark:to-gray-800">
+      <Navigation />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
         {/* Welcome Section */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
             Welcome back, {user?.firstName}!
           </h1>
-          <p className="text-gray-600">
-            Here's your screen health overview and account details.
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
+            Here&apos;s your screen health overview and account details.
           </p>
         </div>
 
-        {/* Subscription Status */}
-        <Card className="mb-8 glass border-0">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Crown className="w-5 h-5 text-primary" />
-              <span>Subscription Plan</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <Badge variant='secondary'>
-                  {planName}
-                </Badge>
-                <span className="text-sm text-gray-600">
-                  Free plan - Upgrade to unlock all features
-                </span>
-              </div>
-              {true && (
-                <Button 
-                  className="gradient-bg hover:opacity-90"
-                  onClick={() => {
-                    setLocation('/landing');
-                    setTimeout(() => {
-                      const element = document.getElementById('pricing');
-                      if (element) {
-                        element.scrollIntoView({ behavior: 'smooth' });
-                      }
-                    }, 100);
-                  }}
-                >
-                  Upgrade to Pro
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Compact Row Layout */}
+        <div className="space-y-4 mb-8">
+          {/* Subscription Status Row */}
+          <div className="lg:col-span-2">
+            <SubscriptionManager />
+          </div>
 
-        {/* Quick Actions */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <Card className="glass border-0 hover-lift cursor-pointer" onClick={() => window.open('/downloads', '_blank')}>
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-3">
-                <Download className="w-8 h-8 text-primary" />
-                <div>
-                  <h3 className="font-semibold">Download App</h3>
-                  <p className="text-sm text-gray-600">Get the desktop application</p>
+          {/* Quick Actions Row - Compact horizontal layout */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            <Card className="hover-lift cursor-pointer" onClick={() => window.open('/downloads', '_blank')}>
+              <CardContent className="p-3 sm:p-4">
+                <div className="flex items-center space-x-2 sm:space-x-3">
+                  <Download className="w-5 h-5 sm:w-6 sm:h-6 text-primary flex-shrink-0" />
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-xs sm:text-sm">Download App</h3>
+                    <p className="text-xs text-gray-600 dark:text-gray-300">Get the desktop application</p>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="glass border-0 hover-lift cursor-pointer" onClick={() => setIsSettingsOpen(true)}>
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-3">
-                <User className="w-8 h-8 text-secondary" />
-                <div>
-                  <h3 className="font-semibold">Account Settings</h3>
-                  <p className="text-sm text-gray-600">Manage your profile</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="hover-lift cursor-pointer" onClick={() => setIsSettingsOpen(true)}>
+              <CardContent className="p-3 sm:p-4">
+                <div className="flex items-center space-x-2 sm:space-x-3">
+                  <User className="w-5 h-5 sm:w-6 sm:h-6 text-secondary flex-shrink-0" />
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-xs sm:text-sm">Account Settings</h3>
+                    <p className="text-xs text-gray-600 dark:text-gray-300">Manage your profile</p>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="glass border-0 hover-lift cursor-pointer" onClick={() => setIsAnalyticsOpen(true)}>
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-3">
-                <BarChart3 className="w-8 h-8 text-accent" />
-                <div>
-                  <h3 className="font-semibold">View Analytics</h3>
-                  <p className="text-sm text-gray-600">See detailed insights</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="hover-lift cursor-pointer sm:col-span-2 lg:col-span-1" onClick={() => setIsAnalyticsOpen(true)}>
+              <CardContent className="p-3 sm:p-4">
+                <div className="flex items-center space-x-2 sm:space-x-3">
+                  <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6 text-accent flex-shrink-0" />
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-xs sm:text-sm">View Analytics</h3>
+                    <p className="text-xs text-gray-600 dark:text-gray-300">See detailed insights</p>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         {/* Usage Statistics */}
@@ -329,65 +378,67 @@ export default function Dashboard() {
               <div className="space-y-3">
                 {displayStats.slice(0, 5).map((stat: any, index: number) => (
                   <Card key={index} className="glass border-0 hover-lift transition-all duration-200">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-lg flex items-center justify-center">
-                            <Calendar className="w-5 h-5 text-primary" />
+                    <CardContent className="p-3 sm:p-4">
+                      <div className="space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
+                        {/* Date Section */}
+                        <div className="flex items-center space-x-2 sm:space-x-3">
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-lg flex items-center justify-center">
+                            <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                           </div>
                           <div>
-                            <div className="font-medium text-gray-900">
+                            <div className="font-medium text-gray-900 dark:text-white text-sm sm:text-base">
                               {new Date(stat.date).toLocaleDateString('en-US', { 
                                 weekday: 'short', 
                                 month: 'short', 
                                 day: 'numeric' 
                               })}
                             </div>
-                            <div className="text-sm text-gray-500">
+                            <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                               {new Date(stat.date).getFullYear()}
                             </div>
                           </div>
                         </div>
                         
-                        <div className="flex items-center gap-8 lg:gap-10">
-                          <div className="flex items-center gap-4 text-sm">
-                            <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
-                              <Clock className="w-4 h-4 text-blue-600" />
+                        {/* Metrics Section - Mobile: Stacked, Desktop: Horizontal */}
+                        <div className="grid grid-cols-2 sm:flex sm:items-center gap-3 sm:gap-4 lg:gap-6 xl:gap-8">
+                          <div className="flex items-center gap-2 sm:gap-3 text-sm">
+                            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                              <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
                             </div>
                             <div>
-                              <div className="font-semibold text-blue-600">{stat.sessionDuration || 0}min</div>
-                              <div className="text-xs text-gray-500">session</div>
+                              <div className="font-semibold text-blue-600 text-xs sm:text-sm">{stat.sessionDuration || 0}min</div>
+                              <div className="text-xs text-gray-500 dark:text-gray-400">session</div>
                             </div>
                           </div>
                           
-                          <div className="flex items-center gap-4 text-sm">
-                            <div className="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center">
-                              <Eye className="w-4 h-4 text-green-600" />
+                          <div className="flex items-center gap-2 sm:gap-3 text-sm">
+                            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-lg flex items-center justify-center">
+                              <Eye className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
                             </div>
                             <div>
-                              <div className="font-semibold text-green-600">{stat.blinkCount || 0}</div>
-                              <div className="text-xs text-gray-500">blinks</div>
+                              <div className="font-semibold text-green-600 text-xs sm:text-sm">{stat.blinkCount || 0}</div>
+                              <div className="text-xs text-gray-500 dark:text-gray-400">blinks</div>
                             </div>
                           </div>
                           
-                          <div className="flex items-center gap-4 text-sm">
-                            <div className="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center">
-                              <Focus className="w-4 h-4 text-purple-600" />
+                          <div className="flex items-center gap-2 sm:gap-3 text-sm">
+                            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-50 rounded-lg flex items-center justify-center">
+                              <Focus className="w-3 h-3 sm:w-4 sm:h-4 text-purple-600" />
                             </div>
                             <div>
-                              <div className="font-semibold text-purple-600">{stat.focusSessions || 0}</div>
-                              <div className="text-xs text-gray-500">focus</div>
+                              <div className="font-semibold text-purple-600 text-xs sm:text-sm">{stat.focusSessions || 0}</div>
+                              <div className="text-xs text-gray-500 dark:text-gray-400">focus</div>
                             </div>
                           </div>
 
                           {stat.postureAlerts > 0 && (
-                            <div className="flex items-center gap-4 text-sm">
-                              <div className="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
-                                <AlertTriangle className="w-4 h-4 text-orange-600" />
+                            <div className="flex items-center gap-2 sm:gap-3 text-sm">
+                              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-50 rounded-lg flex items-center justify-center">
+                                <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4 text-orange-600" />
                               </div>
                               <div>
-                                <div className="font-semibold text-orange-600">{stat.postureAlerts}</div>
-                                <div className="text-xs text-gray-500">alerts</div>
+                                <div className="font-semibold text-orange-600 text-xs sm:text-sm">{stat.postureAlerts}</div>
+                                <div className="text-xs text-gray-500 dark:text-gray-400">alerts</div>
                               </div>
                             </div>
                           )}
@@ -399,9 +450,9 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="text-center py-8">
-                <Eye className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No activity yet</h3>
-                <p className="text-gray-600 mb-4">
+                <Eye className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No activity yet</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-4">
                   Download and start using the desk.ai app to see your screen health statistics here.
                 </p>
                 <Button 
@@ -418,9 +469,9 @@ export default function Dashboard() {
 
       {/* Analytics Modal */}
       <Dialog open={isAnalyticsOpen} onOpenChange={setIsAnalyticsOpen}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] sm:max-h-[80vh] overflow-y-auto w-[95vw] sm:w-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center space-x-2">
+            <DialogTitle className="flex items-center space-x-2 text-lg sm:text-xl">
               <BarChart3 className="w-5 h-5 text-primary" />
               <span>Detailed Analytics</span>
             </DialogTitle>
@@ -434,36 +485,36 @@ export default function Dashboard() {
                          ) : displayStats && displayStats.length > 0 ? (
                <>
                  {/* Summary Cards */}
-                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                    <Card>
-                     <CardContent className="pt-6">
+                     <CardContent className="pt-4 sm:pt-6">
                        <div className="text-center">
-                         <div className="text-2xl font-bold text-primary">
+                         <div className="text-xl sm:text-2xl font-bold text-primary">
                            {displayStats.reduce((total: number, stat: any) => total + (stat.blinkCount || 0), 0)}
                          </div>
-                         <div className="text-sm text-gray-600">Total Blinks</div>
+                         <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Total Blinks</div>
                        </div>
                      </CardContent>
                    </Card>
                    
                    <Card>
-                     <CardContent className="pt-6">
+                     <CardContent className="pt-4 sm:pt-6">
                        <div className="text-center">
-                         <div className="text-2xl font-bold text-orange-500">
+                         <div className="text-xl sm:text-2xl font-bold text-orange-500">
                            {displayStats.reduce((total: number, stat: any) => total + (stat.postureAlerts || 0), 0)}
                          </div>
-                         <div className="text-sm text-gray-600">Posture Alerts</div>
+                         <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Posture Alerts</div>
                        </div>
                      </CardContent>
                    </Card>
                    
                    <Card>
-                     <CardContent className="pt-6">
+                     <CardContent className="pt-4 sm:pt-6">
                        <div className="text-center">
-                         <div className="text-2xl font-bold text-green-500">
+                         <div className="text-xl sm:text-2xl font-bold text-green-500">
                            {displayStats.reduce((total: number, stat: any) => total + (stat.focusSessions || 0), 0)}
                          </div>
-                         <div className="text-sm text-gray-600">Focus Sessions</div>
+                         <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Focus Sessions</div>
                        </div>
                      </CardContent>
                    </Card>
@@ -477,9 +528,9 @@ export default function Dashboard() {
                    <CardContent>
                      <div className="space-y-4">
                        {displayStats.map((stat: any, index: number) => (
-                        <div key={index} className="border rounded-lg p-4">
-                          <div className="flex items-center justify-between mb-3">
-                            <div className="font-semibold">
+                        <div key={index} className="border rounded-lg p-3 sm:p-4">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 space-y-1 sm:space-y-0">
+                            <div className="font-semibold text-sm sm:text-base">
                               {new Date(stat.date).toLocaleDateString('en-US', { 
                                 weekday: 'long', 
                                 year: 'numeric', 
@@ -487,23 +538,44 @@ export default function Dashboard() {
                                 day: 'numeric' 
                               })}
                             </div>
-                            <div className="text-sm text-gray-600">
+                            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
                               {stat.sessionDuration || 0} min session
                             </div>
                           </div>
                           
-                          <div className="grid grid-cols-3 gap-4 text-sm">
-                            <div className="text-center">
-                              <div className="text-lg font-bold text-primary">{stat.blinkCount || 0}</div>
-                              <div className="text-gray-600">Blinks</div>
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-sm">
+                            <div className="flex items-center justify-between sm:flex-col sm:text-center p-2 sm:p-0 bg-gray-50 sm:bg-transparent rounded-lg sm:rounded-none">
+                              <div className="flex items-center space-x-2 sm:space-x-0 sm:flex-col">
+                                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-50 rounded-lg flex items-center justify-center sm:mb-1">
+                                  <Eye className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+                                </div>
+                                <div className="sm:text-center">
+                                  <div className="text-base sm:text-lg font-bold text-blue-600">{stat.blinkCount || 0}</div>
+                                  <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Blinks</div>
+                                </div>
+                              </div>
                             </div>
-                            <div className="text-center">
-                              <div className="text-lg font-bold text-orange-500">{stat.postureAlerts || 0}</div>
-                              <div className="text-gray-600">Bad Posture</div>
+                            <div className="flex items-center justify-between sm:flex-col sm:text-center p-2 sm:p-0 bg-gray-50 sm:bg-transparent rounded-lg sm:rounded-none">
+                              <div className="flex items-center space-x-2 sm:space-x-0 sm:flex-col">
+                                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-50 rounded-lg flex items-center justify-center sm:mb-1">
+                                  <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4 text-orange-600" />
+                                </div>
+                                <div className="sm:text-center">
+                                  <div className="text-base sm:text-lg font-bold text-orange-500">{stat.postureAlerts || 0}</div>
+                                  <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Bad Posture</div>
+                                </div>
+                              </div>
                             </div>
-                            <div className="text-center">
-                              <div className="text-lg font-bold text-green-500">{stat.focusSessions || 0}</div>
-                              <div className="text-gray-600">Focus Sessions</div>
+                            <div className="flex items-center justify-between sm:flex-col sm:text-center p-2 sm:p-0 bg-gray-50 sm:bg-transparent rounded-lg sm:rounded-none">
+                              <div className="flex items-center space-x-2 sm:space-x-0 sm:flex-col">
+                                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-50 rounded-lg flex items-center justify-center sm:mb-1">
+                                  <Focus className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+                                </div>
+                                <div className="sm:text-center">
+                                  <div className="text-base sm:text-lg font-bold text-green-500">{stat.focusSessions || 0}</div>
+                                  <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Focus Sessions</div>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -514,9 +586,9 @@ export default function Dashboard() {
               </>
             ) : (
               <div className="text-center py-8">
-                <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No analytics data available</h3>
-                <p className="text-gray-600 mb-4">
+                <BarChart3 className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No analytics data available</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-4">
                   Start using the desk.ai app to generate analytics data about your screen health.
                 </p>
                 <Button 
@@ -547,12 +619,75 @@ export default function Dashboard() {
           <div className="space-y-6">
             {/* Profile Picture Section */}
             <div className="text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-3">
-                {firstName && lastName ? `${firstName.charAt(0)}${lastName.charAt(0)}` : 
-                 user?.firstName && user?.lastName ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}` :
-                 user?.email ? user.email.charAt(0).toUpperCase() : 'U'}
+              <div className="relative mx-auto mb-3">
+                <div className="w-20 h-20 rounded-full overflow-hidden mx-auto">
+                  {user?.profileImageUrl ? (
+                    <img 
+                      src={user.profileImageUrl} 
+                      alt={`${user.firstName}'s profile picture`}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        // Hide the image and show fallback if it fails to load
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const fallback = target.nextElementSibling as HTMLElement;
+                        if (fallback) {
+                          fallback.style.opacity = '1';
+                        }
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-primary to-secondary items-center justify-center text-white text-2xl font-bold">
+                      {firstName && lastName ? `${firstName.charAt(0)}${lastName.charAt(0)}` : 
+                       user?.firstName && user?.lastName ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}` :
+                       user?.email ? user.email.charAt(0).toUpperCase() : 'U'}
+                    </div>
+                  )}
+                  {/* Fallback div that shows when image fails to load */}
+                  <div className="w-full h-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-2xl font-bold absolute inset-0 opacity-0">
+                    {firstName && lastName ? `${firstName.charAt(0)}${lastName.charAt(0)}` : 
+                     user?.firstName && user?.lastName ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}` :
+                     user?.email ? user.email.charAt(0).toUpperCase() : 'U'}
+                  </div>
+                </div>
+                
+                {/* Upload button - positioned relative to profile picture */}
+                {!user?.googleId && isAuthenticated && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="absolute -bottom-2 -right-2 w-8 h-8 p-0 rounded-full bg-white border-2 border-gray-200 hover:border-primary shadow-md"
+                    onClick={() => document.getElementById('profile-picture-input')?.click()}
+                    disabled={isUploadingProfilePicture}
+                    title={isUploadingProfilePicture ? "Uploading..." : `Change ${user?.firstName}'s profile picture`}
+                  >
+                    {isUploadingProfilePicture ? (
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                    ) : (
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
+                    )}
+                  </Button>
+                )}
               </div>
-              <p className="text-sm text-gray-600">Profile Picture</p>
+              
+              <p className="text-sm text-gray-600">
+                {user?.googleId ? `${user.firstName}'s profile picture` : 
+                 !isAuthenticated ? 'Please log in to upload' :
+                 isUploadingProfilePicture ? 'Uploading...' : `${user?.firstName || 'User'}'s profile picture`}
+              </p>
+              
+              {/* Hidden file input for profile picture upload */}
+              {!user?.googleId && isAuthenticated && (
+                <input
+                  id="profile-picture-input"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => handleProfilePictureUpload(e)}
+                />
+              )}
             </div>
 
             {/* Personal Information */}
@@ -594,8 +729,8 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            {/* Password Section - Only show if not Google auth */}
-            {!user?.googleId && (
+            {/* Password Section - Only show if user has password (no Google auth) */}
+            {user?.password && !user?.googleId && (
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Change Password</CardTitle>
@@ -651,6 +786,11 @@ export default function Dashboard() {
                     <p className="text-sm text-gray-600">
                       {user?.googleId ? 'Google OAuth' : 'Email & Password'}
                     </p>
+                    {user?.googleId && (
+                      <p className="text-xs text-orange-600 mt-1">
+                        Password removed when Google account was linked
+                      </p>
+                    )}
                   </div>
                   <Badge variant={user?.googleId ? 'default' : 'secondary'}>
                     {user?.googleId ? 'Google' : 'Email'}
@@ -692,8 +832,8 @@ export default function Dashboard() {
                     return;
                   }
 
-                  // Validate password if provided (only for non-Google users)
-                  const shouldChangePassword = !user?.googleId && currentPassword && newPassword;
+                  // Validate password if provided (only for users with password, no Google auth)
+                  const shouldChangePassword = user?.password && !user?.googleId && currentPassword && newPassword;
                   if (shouldChangePassword) {
                     if (newPassword !== confirmPassword) {
                       toast({

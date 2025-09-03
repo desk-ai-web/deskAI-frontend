@@ -1,8 +1,166 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 import initialViewImage from "@/assets/initial_view.png";
+import { stripeUtils } from "@/lib/stripe";
+import { useAuth } from "@/hooks/useAuth";
 
 export function HeroSection() {
+  const { isAuthenticated, user: _user } = useAuth();
+  // TODO: Use _user for user-specific features or remove if not needed
+  const [loading, setLoading] = useState(false);
+  const [proPlanId, setProPlanId] = useState<string | null>(null);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<{
+    hasSubscription: boolean;
+    subscription?: any;
+  } | null>(null);
+  const [statusLoading, setStatusLoading] = useState(false);
+
+  // Fetch the Pro plan ID and subscription status
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch plans
+        const plansResponse = await fetch('/api/subscription-plans');
+        if (plansResponse.ok) {
+          const plansData = await plansResponse.json();
+          // The API returns { success: true, data: [...], message: "..." }
+          if (plansData.success && Array.isArray(plansData.data)) {
+            const proPlan = plansData.data.find((plan: any) => plan.name === "Pro");
+            if (proPlan) {
+              setProPlanId(proPlan.id);
+            }
+          } else {
+            console.error('Invalid plans data structure:', plansData);
+          }
+        }
+
+        // Fetch subscription status if authenticated
+        if (isAuthenticated) {
+          setStatusLoading(true);
+          try {
+            const statusResponse = await fetch('/api/subscription', {
+              credentials: 'include',
+            });
+            if (statusResponse.ok) {
+              const status = await statusResponse.json();
+              setSubscriptionStatus(status);
+            }
+          } catch (error) {
+            console.error('Error fetching subscription status:', error);
+          } finally {
+            setStatusLoading(false);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [isAuthenticated]);
+
+  const handleStartTrial = async () => {
+    if (!isAuthenticated) {
+      // Redirect to auth page if not logged in
+      window.location.href = '/auth';
+      return;
+    }
+
+    if (!proPlanId) {
+      alert('Unable to load subscription plans. Please try again.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await stripeUtils.redirectToCheckout(proPlanId);
+    } catch (error) {
+      console.error('Error redirecting to checkout:', error);
+      alert('Failed to start checkout. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoToDashboard = () => {
+    window.location.href = '/dashboard';
+  };
+
+  const handleManageSubscription = async () => {
+    try {
+      await stripeUtils.redirectToPortal();
+    } catch (error) {
+      console.error('Error redirecting to portal:', error);
+      alert('Failed to open billing portal. Please try again.');
+    }
+  };
+
+  // Helper functions to check subscription status
+  const isOnTrial = (subscription: any): boolean => {
+    if (!subscription || !subscription.trialEnd) {
+      return false;
+    }
+    const trialEnd = new Date(subscription.trialEnd);
+    const now = new Date();
+    return trialEnd > now;
+  };
+
+  const isSubscriptionActive = (subscription: any): boolean => {
+    if (!subscription) {
+      return false;
+    }
+    return ['active', 'trialing'].includes(subscription.status);
+  };
+
+  // Determine what button to show
+  const getPrimaryButton = () => {
+    if (!isAuthenticated) {
+      return {
+        text: "Start Free Trial",
+        onClick: handleStartTrial,
+        loading: loading,
+        disabled: loading || !proPlanId
+      };
+    }
+
+    if (statusLoading) {
+      return {
+        text: "Loading...",
+        onClick: () => {},
+        loading: true,
+        disabled: true
+      };
+    }
+
+    if (subscriptionStatus?.hasSubscription && isSubscriptionActive(subscriptionStatus.subscription)) {
+      if (isOnTrial(subscriptionStatus.subscription)) {
+        return {
+          text: "Go to Dashboard",
+          onClick: handleGoToDashboard,
+          loading: false,
+          disabled: false
+        };
+      } else {
+        return {
+          text: "Manage Subscription",
+          onClick: handleManageSubscription,
+          loading: false,
+          disabled: false
+        };
+      }
+    }
+
+    // No active subscription, show start trial
+    return {
+      text: "Start Free Trial",
+      onClick: handleStartTrial,
+      loading: loading,
+      disabled: loading || !proPlanId
+    };
+  };
+
+  const primaryButton = getPrimaryButton();
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden pt-16">
       <div className="absolute inset-0 gradient-bg opacity-5"></div>
@@ -40,13 +198,25 @@ export function HeroSection() {
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4">
-            {/* <Button 
+            <Button 
               size="lg"
-              className="gradient-bg hover:opacity-90 text-lg px-8 py-6"
-              onClick={() => window.location.href = '/api/login'}
+              className={`text-lg px-8 py-6 ${
+                primaryButton.text === "Start Free Trial" 
+                  ? "gradient-bg hover:opacity-90" 
+                  : "bg-white text-primary border-2 border-primary hover:bg-primary hover:text-white"
+              }`}
+              onClick={primaryButton.onClick}
+              disabled={primaryButton.disabled}
             >
-              Start Free Trial
-            </Button> */}
+              {primaryButton.loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                primaryButton.text
+              )}
+            </Button>
             <Button 
               size="lg"
               variant="outline"

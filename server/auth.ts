@@ -5,7 +5,8 @@ import { Express } from "express";
 import session from "express-session";
 import bcrypt from "bcryptjs";
 import { storage } from "./storage";
-import { User as DatabaseUser } from "@shared/schema";
+// Note: DatabaseUser type is available but not currently used
+// import { User as DatabaseUser } from "@shared/schema";
 import connectPg from "connect-pg-simple";
 
 declare global {
@@ -56,8 +57,16 @@ export function setupAuth(app: Express) {
       async (email, password, done) => {
         try {
           const user = await storage.getUserByEmail(email);
-          if (!user || !user.password) {
+          
+          if (!user) {
             return done(null, false, { message: "Invalid email or password" });
+          }
+
+          // Check if user signed up with OAuth (no password)
+          if (!user.password) {
+            return done(null, false, { 
+              message: "This account was created using Google Sign-In. Please use the 'Continue with Google' option instead." 
+            });
           }
 
           const isValid = await bcrypt.compare(password, user.password);
@@ -93,9 +102,10 @@ export function setupAuth(app: Express) {
             // Check if user exists with same email
             const existingEmailUser = await storage.getUserByEmail(profile.emails?.[0]?.value || '');
             if (existingEmailUser) {
-              // Link Google account to existing user
+              // Link Google account to existing user and remove password (one-way migration)
               const updatedUser = await storage.updateUser(existingEmailUser.id, {
                 googleId: profile.id,
+                password: null, // Remove password when linking Google account
                 profileImageUrl: profile.photos?.[0]?.value || existingEmailUser.profileImageUrl,
                 isEmailVerified: true, // Google emails are verified
               });
@@ -142,6 +152,12 @@ export function setupAuth(app: Express) {
       // Check if user already exists
       const existingUser = await storage.getUserByEmail(email);
       if (existingUser) {
+        // Check if the existing user signed up with OAuth
+        if (existingUser.googleId && !existingUser.password) {
+          return res.status(400).json({ 
+            message: "An account with this email already exists using Google Sign-In. Please use the 'Continue with Google' option instead." 
+          });
+        }
         return res.status(400).json({ message: "User already exists" });
       }
 
@@ -167,8 +183,23 @@ export function setupAuth(app: Express) {
     }
   });
 
-  app.post("/api/login", passport.authenticate("local"), (req, res) => {
-    res.json({ user: req.user, message: "Logged in successfully" });
+  app.post("/api/login", (req, res, next) => {
+    passport.authenticate("local", (err: any, user: any, info: any) => {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        return res.status(401).json({ 
+          message: info?.message || "Invalid email or password" 
+        });
+      }
+      req.login(user, (err) => {
+        if (err) {
+          return next(err);
+        }
+        res.json({ user, message: "Logged in successfully" });
+      });
+    })(req, res, next);
   });
 
   // Google OAuth routes

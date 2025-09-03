@@ -8,7 +8,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [
-    react(),
+    react({
+      // Add explicit configuration to prevent preamble detection issues
+      jsxRuntime: 'automatic'
+    }),
     runtimeErrorOverlay(),
     ...(process.env.NODE_ENV !== "production" &&
     process.env.REPL_ID !== undefined

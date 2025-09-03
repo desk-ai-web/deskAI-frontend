@@ -26,16 +26,16 @@ export default function Landing() {
             Start fixing your screen habits in less than 5 minutes
           </h2>
           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Join thousands of professionals who've improved their eye health and posture with desk.ai
+          Be among the first to transform your screen habits and improve your workspace wellness with desk.ai
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            {/* <button 
+            <button 
               onClick={() => isAuthenticated ? setLocation('/dashboard') : setLocation('/auth')}
               className="bg-white text-primary px-8 py-4 rounded-xl text-lg font-semibold hover:shadow-xl transition-all hover:scale-105"
             >
               {isAuthenticated ? 'Go to Dashboard' : 'Start Free Trial'}
-            </button> */}
+            </button>
             <button 
               onClick={() => setLocation('/downloads')}
               className="border-2 border-white text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white hover:text-primary transition-all"

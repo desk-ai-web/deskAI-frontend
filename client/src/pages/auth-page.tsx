@@ -4,15 +4,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Monitor, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Monitor } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
-import { Redirect, Link, useLocation } from "wouter";
+import { Redirect, useLocation } from "wouter";
+import { Navigation } from "@/components/navigation";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -118,42 +119,23 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      {/* Header with back to home navigation */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/">
-              <Button variant="ghost" className="flex items-center gap-2 text-gray-600 hover:bg-primary">
-                <ArrowLeft className="w-4 h-4" />
-                Back to Home
-              </Button>
-            </Link>
-            
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center">
-                <Monitor className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-xl font-bold gradient-text">desk.ai</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex min-h-[calc(100vh-4rem)]">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <Navigation />
+      
+      <div className="flex min-h-[calc(100vh-4rem)] pt-16">
         {/* Left side - Auth forms */}
         <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
           <div className="w-full max-w-md">
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
                 Welcome back
               </h1>
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-gray-300">
                 Sign in to your account or create a new one
               </p>
             </div>
 
-            <Card className="glass border-0 shadow-xl">
+            <Card className="glass border-0 shadow-xl dark:bg-gray-800/50 dark:border-gray-700">
               <CardHeader>
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
                   <TabsList className="grid w-full grid-cols-2">
@@ -166,7 +148,7 @@ export default function AuthPage() {
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
                   <TabsContent value="login" className="space-y-6">
                     {loginMutation.error && (
-                      <Alert variant="destructive">
+                      <Alert variant="destructive" className="dark:bg-red-950 dark:border-red-800 dark:text-red-200">
                         <AlertDescription>
                           {loginMutation.error.displayMessage || "Login failed. Please try again."}
                         </AlertDescription>
@@ -174,7 +156,7 @@ export default function AuthPage() {
                     )}
 
                     {oauthError && (
-                      <Alert variant="destructive">
+                      <Alert variant="destructive" className="dark:bg-red-950 dark:border-red-800 dark:text-red-200">
                         <AlertDescription>
                           {oauthError === 'google' 
                             ? "Google sign-in failed. Please try again or use email/password." 
@@ -197,7 +179,7 @@ export default function AuthPage() {
                           />
                         </div>
                         {loginForm.formState.errors.email && (
-                          <p className="text-sm text-red-500 mt-1">
+                          <p className="text-sm text-red-500 dark:text-red-400 mt-1">
                             {loginForm.formState.errors.email.message}
                           </p>
                         )}
@@ -223,9 +205,9 @@ export default function AuthPage() {
                           </button>
                         </div>
                         {loginForm.formState.errors.password && (
-                          <p className="text-sm text-red-500 mt-1">
+                          <p className="text-sm text-red-500 dark:text-red-400 mt-1">
                             {loginForm.formState.errors.password.message}
-                          </p>
+                        </p>
                         )}
                       </div>
                       
@@ -244,14 +226,18 @@ export default function AuthPage() {
                         <span className="w-full border-t" />
                       </div>
                       <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-white px-2 text-muted-foreground">Or continue with</span>
+                        <span className="bg-white dark:bg-gray-800 px-2 text-muted-foreground">Or continue with</span>
                       </div>
+                    </div>
+
+                    <div className="text-center text-sm text-gray-600 dark:text-gray-300 mb-4">
+                      <p>If you signed up with Google, use the button below</p>
                     </div>
 
                     <Button
                       type="button"
                       variant="outline"
-                      className="w-full bg-white hover:bg-gray-50 border-gray-300 text-gray-800 hover:text-gray-900 font-medium transition-all duration-200 hover:shadow-md hover:border-gray-400"
+                      className="w-full bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white font-medium transition-all duration-200 hover:shadow-md hover:border-gray-400 dark:hover:border-gray-500"
                       onClick={() => window.location.href = '/api/auth/google'}
                     >
                       <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
@@ -278,7 +264,7 @@ export default function AuthPage() {
 
                   <TabsContent value="register" className="space-y-6">
                     {registerMutation.error && (
-                      <Alert variant="destructive">
+                      <Alert variant="destructive" className="dark:bg-red-950 dark:border-red-800 dark:text-red-200">
                         <AlertDescription>
                           {registerMutation.error.displayMessage || "Registration failed. Please try again."}
                         </AlertDescription>
@@ -286,7 +272,7 @@ export default function AuthPage() {
                     )}
 
                     {oauthError && (
-                      <Alert variant="destructive">
+                      <Alert variant="destructive" className="dark:bg-red-950 dark:border-red-800 dark:text-red-200">
                         <AlertDescription>
                           {oauthError === 'google' 
                             ? "Google sign-in failed. Please try again or use email/password." 
@@ -310,7 +296,7 @@ export default function AuthPage() {
                             />
                           </div>
                           {registerForm.formState.errors.firstName && (
-                            <p className="text-sm text-red-500 mt-1">
+                            <p className="text-sm text-red-500 dark:text-red-400 mt-1">
                               {registerForm.formState.errors.firstName.message}
                             </p>
                           )}
@@ -329,7 +315,7 @@ export default function AuthPage() {
                             />
                           </div>
                           {registerForm.formState.errors.lastName && (
-                            <p className="text-sm text-red-500 mt-1">
+                            <p className="text-sm text-red-500 dark:text-red-400 mt-1">
                               {registerForm.formState.errors.lastName.message}
                             </p>
                           )}
@@ -349,7 +335,7 @@ export default function AuthPage() {
                           />
                         </div>
                         {registerForm.formState.errors.email && (
-                          <p className="text-sm text-red-500 mt-1">
+                          <p className="text-sm text-red-500 dark:text-red-400 mt-1">
                             {registerForm.formState.errors.email.message}
                           </p>
                         )}
@@ -375,7 +361,7 @@ export default function AuthPage() {
                           </button>
                         </div>
                         {registerForm.formState.errors.password && (
-                          <p className="text-sm text-red-500 mt-1">
+                          <p className="text-sm text-red-500 dark:text-red-400 mt-1">
                             {registerForm.formState.errors.password.message}
                           </p>
                         )}
@@ -396,14 +382,14 @@ export default function AuthPage() {
                         <span className="w-full border-t" />
                       </div>
                       <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-white px-2 text-muted-foreground">Or continue with</span>
+                        <span className="bg-white dark:bg-gray-800 px-2 text-muted-foreground">Or continue with</span>
                       </div>
                     </div>
 
                     <Button
                       type="button"
                       variant="outline"
-                      className="w-full bg-white hover:bg-gray-50 border-gray-300 text-gray-800 hover:text-gray-900 font-medium transition-all duration-200 hover:shadow-md hover:border-gray-400"
+                      className="w-full bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white font-medium transition-all duration-200 hover:shadow-md hover:border-gray-400 dark:hover:border-gray-500"
                       onClick={() => window.location.href = '/api/auth/google'}
                     >
                       <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
@@ -432,7 +418,7 @@ export default function AuthPage() {
             </Card>
 
             <div className="text-center mt-6">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 dark:text-gray-300">
                 By signing up, you agree to our{" "}
                 <a href="/terms" className="text-primary hover:underline">
                   Terms of Service
@@ -447,7 +433,7 @@ export default function AuthPage() {
         </div>
 
         {/* Right side - Hero section */}
-        <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary to-blue-600 items-center justify-center p-8 text-white">
+        <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary to-blue-600 dark:from-gray-800 dark:to-gray-900 items-center justify-center p-8 text-white">
           <div className="max-w-md text-center">
             <div className="relative mb-8">
               <div className="w-32 h-32 mx-auto bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
@@ -474,13 +460,13 @@ export default function AuthPage() {
             </p>
             
             <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+              <div className="bg-white/10 dark:bg-gray-700/30 rounded-lg p-3 backdrop-blur-sm">
                 <div className="text-green-400 font-semibold">Eye Tracking</div>
-                <div className="text-white/80">Real-time blink monitoring</div>
+                <div className="text-white/80 dark:text-gray-200">Real-time blink monitoring</div>
               </div>
-              <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+              <div className="bg-white/10 dark:bg-gray-700/30 rounded-lg p-3 backdrop-blur-sm">
                 <div className="text-green-400 font-semibold">Posture Alert</div>
-                <div className="text-white/80">Smart posture detection</div>
+                <div className="text-white/80 dark:text-gray-200">Smart posture detection</div>
               </div>
             </div>
           </div>

@@ -1,87 +1,139 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
+import { stripeUtils } from "@/lib/stripe";
+import { useAuth } from "@/hooks/useAuth";
+
+interface SubscriptionPlan {
+  id: string;
+  name: string;
+  price: number;
+  features: string[];
+  isActive: boolean;
+}
 
 export function PricingSection() {
-  const plans = [
-    {
-      name: "Free",
-      price: 0,
-      description: "Perfect for getting started",
-      features: [
-        "Basic blink tracking",
-        "Simple reminders",
-        "Basic timer",
-        "Desktop app access"
-      ],
-      buttonText: "Get Started",
-      popular: false
-    },
-    {
-      name: "Pro",
-      price: 2.99,
-      description: "For serious professionals",
-      features: [
-        "Advanced AI tracking",
-        "Posture monitoring",
-        "Smart focus timer",
-        "Detailed analytics",
-        "Multi-screen support",
-        "Custom reminder settings",
-        "Priority support"
-      ],
-      buttonText: "Start Pro Trial",
-      popular: true
-    },
-    {
-      name: "Team",
-      price: 9.99,
-      description: "For teams and organizations",
-      features: [
-        "Everything in Pro",
-        "Team dashboard",
-        "Usage insights",
-        "Admin controls",
-        "Priority support",
-        "Custom integrations"
-      ],
-      buttonText: "Contact Sales",
-      popular: false
-    }
-  ];
+  const { user: _user, isAuthenticated } = useAuth();
+  // TODO: Use _user for user-specific features or remove if not needed
+  const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
 
-  const handlePlanSelect = (planName: string) => {
-    if (planName === "Team") {
-      // Open contact form or redirect to sales
-      window.open('mailto:gopimaheshmehta@gmail.com?subject=Team Plan Inquiry', '_blank');
-    } else {
-      // // Redirect to signup
-      // window.location.href = '/api/login';
-      // Redirect to downloads
-      window.location.href = '/downloads';
+  useEffect(() => {
+    fetchPlans();
+  }, []);
+
+  const fetchPlans = async () => {
+    try {
+      const response = await fetch('/api/subscription-plans');
+      if (response.ok) {
+        const plansData = await response.json();
+        // The API returns { success: true, data: [...], message: "..." }
+        if (plansData.success && Array.isArray(plansData.data)) {
+          setPlans(plansData.data);
+        } else {
+          console.error('Invalid plans data structure:', plansData);
+          setPlans([]);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching plans:', error);
+      setPlans([]);
     }
   };
+
+  const handlePlanSelect = async (planId: string) => {
+    if (!isAuthenticated) {
+      // Redirect to auth page if not logged in
+      window.location.href = '/auth';
+      return;
+    }
+
+    setSelectedPlan(planId);
+    setLoading(true);
+
+    try {
+      await stripeUtils.redirectToCheckout(planId);
+    } catch (error) {
+      console.error('Error redirecting to checkout:', error);
+      alert('Failed to start checkout. Please try again.');
+    } finally {
+      setLoading(false);
+      setSelectedPlan(null);
+    }
+  };
+
+  const handleTeamPlan = () => {
+    window.open('mailto:contact@desk-ai.app?subject=Team Plan Inquiry', '_blank');
+  };
+
+  // Use API plans only - no fallback to avoid UUID issues
+  const displayPlans = Array.isArray(plans) ? plans : [];
+  
+  // Get the Pro plan ID for the hero section
+  const _proPlanId = displayPlans.find(plan => plan.name === "Pro")?.id;
+  // TODO: Use _proPlanId for hero section integration or remove if not needed
 
   return (
     <section id="pricing" className="py-20 bg-gradient-to-br from-light to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-            Choose your <span className="gradient-text">plan</span>
+            Start with a <span className="gradient-text">free trial</span>
           </h2>
-          <p className="text-xl text-gray-600">Start free, upgrade when you're ready</p>
+          <p className="text-xl text-gray-600">Try all features free for 14 days, then choose your plan</p>
         </div>
         
-        <div className="grid md:grid-cols-3 gap-8">
-          {plans.map((plan) => (
+        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          {/* Free Trial Plan */}
+          <Card className="glass border-0 hover-lift relative">
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold">Free Trial</CardTitle>
+              <div className="text-4xl font-bold">
+                €0
+                <span className="text-lg text-gray-600 font-normal">/month</span>
+              </div>
+              <p className="text-gray-600">14-day free trial, no credit card required</p>
+            </CardHeader>
+            
+            <CardContent>
+              <ul className="space-y-4 mb-8">
+                {[
+                  "Full feature access for 14 days",
+                  "Advanced AI tracking",
+                  "Posture monitoring", 
+                  "Smart focus timer",
+                  "Multi-screen support",
+                  "Email support"
+                ].map((feature, index) => (
+                  <li key={index} className="flex items-center space-x-3">
+                    <Check className="w-5 h-5 text-secondary" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+              
+              <Button
+                className="w-full py-3 border-2 border-primary text-primary hover:bg-primary hover:text-white"
+                variant="outline"
+                onClick={() => window.location.href = '/auth'}
+              >
+                Start Free Trial
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Pro Plan */}
+          {displayPlans.length > 0 ? displayPlans.map((plan) => (
             <Card 
-              key={plan.name}
+              key={plan.id}
               className={`glass border-0 hover-lift relative ${
-                plan.popular ? 'ring-2 ring-primary' : ''
+                plan.name === "Pro" ? 'ring-2 ring-primary' : ''
               }`}
             >
-              {plan.popular && (
+              {plan.name === "Pro" && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                   <Badge className="gradient-bg">Most Popular</Badge>
                 </div>
@@ -90,10 +142,12 @@ export function PricingSection() {
               <CardHeader>
                 <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
                 <div className="text-4xl font-bold">
-                  ${plan.price}
+                  €{(plan.price / 100).toFixed(2)}
                   <span className="text-lg text-gray-600 font-normal">/month</span>
                 </div>
-                <p className="text-gray-600">{plan.description}</p>
+                <p className="text-gray-600">
+                  {plan.name === "Pro" ? "For serious professionals" : "For teams and organizations"}
+                </p>
               </CardHeader>
               
               <CardContent>
@@ -108,18 +162,35 @@ export function PricingSection() {
                 
                 <Button
                   className={`w-full py-3 ${
-                    plan.popular 
+                    plan.name === "Pro"
                       ? 'gradient-bg hover:opacity-90' 
                       : 'border-2 border-primary text-primary hover:bg-primary hover:text-white'
                   }`}
-                  variant={plan.popular ? "default" : "outline"}
-                  onClick={() => handlePlanSelect(plan.name)}
+                  variant={plan.name === "Pro" ? "default" : "outline"}
+                  onClick={() => plan.name === "Team" ? handleTeamPlan() : handlePlanSelect(plan.id)}
+                  disabled={loading && selectedPlan === plan.id}
                 >
-                  {plan.buttonText}
+                  {loading && selectedPlan === plan.id ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    plan.name === "Team" ? "Contact Sales" : "Start 14-Day Trial"
+                  )}
                 </Button>
               </CardContent>
             </Card>
-          ))}
+          )) : (
+            <Card className="glass border-0 hover-lift relative">
+              <CardContent className="flex items-center justify-center py-8">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                  <p className="text-gray-600">Loading subscription plans...</p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Feature Comparison */}
@@ -127,13 +198,12 @@ export function PricingSection() {
           <h3 className="text-2xl font-bold text-center mb-8">Feature Comparison</h3>
           
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full max-w-3xl mx-auto">
               <thead>
                 <tr className="border-b">
                   <th className="text-left py-4 px-2">Feature</th>
-                  <th className="text-center py-4 px-2">Free</th>
+                  <th className="text-center py-4 px-2">Free Trial</th>
                   <th className="text-center py-4 px-2">Pro</th>
-                  <th className="text-center py-4 px-2">Team</th>
                 </tr>
               </thead>
               <tbody>
@@ -145,13 +215,9 @@ export function PricingSection() {
                   <td className="text-center py-4 px-2">
                     <Check className="w-5 h-5 text-secondary mx-auto" />
                   </td>
-                  <td className="text-center py-4 px-2">
-                    <Check className="w-5 h-5 text-secondary mx-auto" />
-                  </td>
                 </tr>
                 <tr className="border-b">
                   <td className="py-4 px-2">Posture monitoring</td>
-                  <td className="text-center py-4 px-2">-</td>
                   <td className="text-center py-4 px-2">
                     <Check className="w-5 h-5 text-secondary mx-auto" />
                   </td>
@@ -161,13 +227,11 @@ export function PricingSection() {
                 </tr>
                 <tr className="border-b">
                   <td className="py-4 px-2">Analytics & insights</td>
-                  <td className="text-center py-4 px-2">Basic</td>
+                  <td className="text-center py-4 px-2">14 days</td>
                   <td className="text-center py-4 px-2">Advanced</td>
-                  <td className="text-center py-4 px-2">Advanced + Team</td>
                 </tr>
                 <tr className="border-b">
                   <td className="py-4 px-2">Multi-screen support</td>
-                  <td className="text-center py-4 px-2">-</td>
                   <td className="text-center py-4 px-2">
                     <Check className="w-5 h-5 text-secondary mx-auto" />
                   </td>
@@ -177,10 +241,7 @@ export function PricingSection() {
                 </tr>
                 <tr>
                   <td className="py-4 px-2">Priority support</td>
-                  <td className="text-center py-4 px-2">-</td>
-                  <td className="text-center py-4 px-2">
-                    <Check className="w-5 h-5 text-secondary mx-auto" />
-                  </td>
+                  <td className="text-center py-4 px-2">Email only</td>
                   <td className="text-center py-4 px-2">
                     <Check className="w-5 h-5 text-secondary mx-auto" />
                   </td>
