@@ -14,6 +14,8 @@ interface SubscriptionPlan {
   isActive: boolean;
 }
 
+import { getApiUrl } from '@/config';
+
 export function PricingSection() {
   const { user: _user, isAuthenticated } = useAuth();
   // TODO: Use _user for user-specific features or remove if not needed
@@ -27,7 +29,7 @@ export function PricingSection() {
 
   const fetchPlans = async () => {
     try {
-      const response = await fetch('/api/subscription-plans');
+      const response = await fetch(getApiUrl('/api/subscription-plans'));
       if (response.ok) {
         const plansData = await response.json();
         // The API returns { success: true, data: [...], message: "..." }

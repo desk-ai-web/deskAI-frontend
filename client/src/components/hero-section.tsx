@@ -5,6 +5,8 @@ import initialViewImage from "@/assets/initial_view.png";
 import { stripeUtils } from "@/lib/stripe";
 import { useAuth } from "@/hooks/useAuth";
 
+import { getApiUrl } from '@/config';
+
 export function HeroSection() {
   const { isAuthenticated, user: _user } = useAuth();
   // TODO: Use _user for user-specific features or remove if not needed
@@ -21,7 +23,7 @@ export function HeroSection() {
     const fetchData = async () => {
       try {
         // Fetch plans
-        const plansResponse = await fetch('/api/subscription-plans');
+        const plansResponse = await fetch(getApiUrl('/api/subscription-plans'));
         if (plansResponse.ok) {
           const plansData = await plansResponse.json();
           // The API returns { success: true, data: [...], message: "..." }
@@ -42,7 +44,7 @@ export function HeroSection() {
         if (isAuthenticated) {
           setStatusLoading(true);
           try {
-            const statusResponse = await fetch('/api/subscription', {
+            const statusResponse = await fetch(getApiUrl('/api/subscription'), {
               credentials: 'include',
             });
             if (statusResponse.ok) {
