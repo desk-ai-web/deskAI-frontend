@@ -31,7 +31,10 @@ export function HeroSection() {
               setProPlanId(proPlan.id);
             }
           } else {
-            console.error('Invalid plans data structure:', plansData);
+            // Invalid data structure - skip error logging in production
+            if (import.meta.env.MODE === 'development') {
+              console.error('Invalid plans data structure:', plansData);
+            }
           }
         }
 
@@ -47,13 +50,13 @@ export function HeroSection() {
               setSubscriptionStatus(status);
             }
           } catch (error) {
-            console.error('Error fetching subscription status:', error);
+            // Silent fail for subscription status
           } finally {
             setStatusLoading(false);
           }
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        // Silent fail for data fetching
       }
     };
 
@@ -76,7 +79,6 @@ export function HeroSection() {
     try {
       await stripeUtils.redirectToCheckout(proPlanId);
     } catch (error) {
-      console.error('Error redirecting to checkout:', error);
       alert('Failed to start checkout. Please try again.');
     } finally {
       setLoading(false);
@@ -91,7 +93,6 @@ export function HeroSection() {
     try {
       await stripeUtils.redirectToPortal();
     } catch (error) {
-      console.error('Error redirecting to portal:', error);
       alert('Failed to open billing portal. Please try again.');
     }
   };

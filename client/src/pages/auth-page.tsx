@@ -61,24 +61,44 @@ export default function AuthPage() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginData) => {
-      const res = await apiRequest("POST", "/api/login", data);
-      return await res.json();
+      const res = await apiRequest("POST", "/api/v2/login", data);
+      const json = await res.json();
+      // Persist JWT for future requests
+      if (json?.data?.token) {
+        localStorage.setItem('deskai_jwt', json.data.token);
+      }
+      return json;
     },
     onSuccess: async () => {
       // Wait for user data to be loaded before redirecting
-      await queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      await queryClient.refetchQueries({ queryKey: ["/api/user"] });
+      await queryClient.invalidateQueries({ queryKey: ["/api/v2/user/data"] });
+      await queryClient.refetchQueries({ queryKey: ["/api/v2/user/data"] });
       setLocation("/dashboard");
     },
     onError: (error: any) => {
-      console.error("Login error:", error);
+      // Log errors in development only
+      if (import.meta.env.MODE === 'development') {
+        console.error("Login error:", error);
+      }
       // Extract meaningful error message from server response
-      if (error.message && error.message.includes(':')) {
-        const serverMessage = error.message.split(':').slice(1).join(':').trim();
-        if (serverMessage) {
-          error.displayMessage = serverMessage;
+      let displayMessage = "Login failed. Please try again.";
+      
+      if (error.message) {
+        if (error.message.includes(':')) {
+          const serverMessage = error.message.split(':').slice(1).join(':').trim();
+          if (serverMessage) {
+            displayMessage = serverMessage;
+          }
+        } else if (error.message.includes('Invalid email or password')) {
+          displayMessage = "Invalid email or password. Please check your credentials and try again.";
+        } else if (error.message.includes('License expired')) {
+          displayMessage = "Your trial has expired. Please contact support or start a new subscription.";
+        } else {
+          displayMessage = error.message;
         }
       }
+      
+      error.displayMessage = displayMessage;
     },
   });
 
@@ -89,12 +109,15 @@ export default function AuthPage() {
     },
     onSuccess: async () => {
       // Wait for user data to be loaded before redirecting
-      await queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      await queryClient.refetchQueries({ queryKey: ["/api/user"] });
+      await queryClient.invalidateQueries({ queryKey: ["/api/v2/user/data"] });
+      await queryClient.refetchQueries({ queryKey: ["/api/v2/user/data"] });
       setLocation("/dashboard");
     },
     onError: (error: any) => {
-      console.error("Registration error:", error);
+      // Log errors in development only
+      if (import.meta.env.MODE === 'development') {
+        console.error("Registration error:", error);
+      }
       // Extract meaningful error message from server response
       if (error.message && error.message.includes(':')) {
         const serverMessage = error.message.split(':').slice(1).join(':').trim();

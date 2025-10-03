@@ -1,17 +1,25 @@
 import { useQuery } from "@tanstack/react-query";
 import { getQueryFn } from "@/lib/queryClient";
-import type { User } from "@shared/schema";
+
+type JwtUser = {
+  id: string;
+  email: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  profileImageUrl?: string | null;
+  licenseExpiry?: string | null;
+};
 
 export function useAuth() {
-  const { data: user, isLoading } = useQuery<User>({
-    queryKey: ["/api/user"],
+  const { data: v2Data, isLoading } = useQuery<{ data: { user: JwtUser } } | null>({
+    queryKey: ["/api/v2/user/data"],
     queryFn: getQueryFn({ on401: "returnNull" }),
     retry: false,
   });
 
   return {
-    user,
+    user: (v2Data as any)?.data?.user ?? null,
     isLoading,
-    isAuthenticated: !!user,
+    isAuthenticated: !!(v2Data as any)?.data?.user,
   };
 }

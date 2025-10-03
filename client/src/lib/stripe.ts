@@ -1,7 +1,14 @@
 import { loadStripe } from '@stripe/stripe-js';
 
 // Load Stripe with your publishable key
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY!);
+const stripePublishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+
+// Validate Stripe key is loaded (development warning only)
+if (import.meta.env.MODE === 'development' && !stripePublishableKey) {
+  console.warn('Warning: VITE_STRIPE_PUBLISHABLE_KEY is not set');
+}
+
+const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
 
 export { stripePromise };
 
@@ -31,7 +38,7 @@ export const stripeUtils = {
         throw new Error('Invalid response structure from checkout API');
       }
     } catch (error) {
-      console.error('Error redirecting to checkout:', error);
+      // Re-throw error for caller to handle
       throw error;
     }
   },
@@ -59,7 +66,7 @@ export const stripeUtils = {
         throw new Error('Invalid response structure from portal API');
       }
     } catch (error) {
-      console.error('Error redirecting to portal:', error);
+      // Re-throw error for caller to handle
       throw error;
     }
   },
@@ -92,7 +99,7 @@ export const stripeUtils = {
         throw new Error('Invalid response structure from subscription API');
       }
     } catch (error) {
-      console.error('Error fetching subscription status:', error);
+      // Re-throw error for caller to handle
       throw error;
     }
   },

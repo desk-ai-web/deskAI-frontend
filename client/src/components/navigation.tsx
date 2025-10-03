@@ -2,35 +2,18 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Eye, Menu, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
 import { useLocation, Link } from "wouter";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useLogout } from "@/lib/authUtils";
 
 export function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, isAuthenticated } = useAuth();
   const [location] = useLocation();
   const [, setLocation] = useLocation();
-  const queryClient = useQueryClient();
-
-  // Logout mutation
-  const logoutMutation = useMutation({
-    mutationFn: async () => {
-      await apiRequest("POST", "/api/logout");
-    },
-    onSuccess: () => {
-      queryClient.setQueryData(["/api/user"], null);
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      setLocation("/auth");
-    },
-    onError: (error) => {
-      console.error("Logout error:", error);
-      queryClient.setQueryData(["/api/user"], null);
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      setLocation("/auth");
-    },
-  });
+  
+  // Use centralized logout utility
+  const logoutMutation = useLogout();
 
   const handleLogout = () => {
     logoutMutation.mutate();

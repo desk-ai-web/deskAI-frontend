@@ -34,12 +34,15 @@ export function PricingSection() {
         if (plansData.success && Array.isArray(plansData.data)) {
           setPlans(plansData.data);
         } else {
-          console.error('Invalid plans data structure:', plansData);
+          // Invalid data structure - log in development only
+          if (import.meta.env.MODE === 'development') {
+            console.error('Invalid plans data structure:', plansData);
+          }
           setPlans([]);
         }
       }
     } catch (error) {
-      console.error('Error fetching plans:', error);
+      // Silent fail for plans fetching
       setPlans([]);
     }
   };
@@ -57,7 +60,6 @@ export function PricingSection() {
     try {
       await stripeUtils.redirectToCheckout(planId);
     } catch (error) {
-      console.error('Error redirecting to checkout:', error);
       alert('Failed to start checkout. Please try again.');
     } finally {
       setLoading(false);

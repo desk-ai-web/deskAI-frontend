@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { fileURLToPath, URL } from 'url';
-import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
+// Replit-specific plugins removed
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -12,15 +12,7 @@ export default defineConfig({
       // Add explicit configuration to prevent preamble detection issues
       jsxRuntime: 'automatic'
     }),
-    runtimeErrorOverlay(),
-    ...(process.env.NODE_ENV !== "production" &&
-    process.env.REPL_ID !== undefined
-      ? [
-          await import("@replit/vite-plugin-cartographer").then((m) =>
-            m.cartographer(),
-          ),
-        ]
-      : []),
+    // No Replit plugins
   ],
   resolve: {
     alias: {
@@ -38,6 +30,13 @@ export default defineConfig({
     fs: {
       strict: true,
       deny: ["**/.*"],
+    },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 });

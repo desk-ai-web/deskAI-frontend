@@ -14,6 +14,7 @@ import { Eye, User, Download, BarChart3, Timer, Calendar, Clock, Focus, AlertTri
 import { useLocation } from "wouter";
 import { SubscriptionManager } from "@/components/subscription-manager";
 import { Navigation } from "@/components/navigation";
+import { useLogout } from "@/lib/authUtils";
 
 export default function Dashboard() {
   const { toast } = useToast();
@@ -32,29 +33,12 @@ export default function Dashboard() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isUploadingProfilePicture, setIsUploadingProfilePicture] = useState(false);
 
-  // TODO: Implement logout functionality when needed
-  // const logoutMutation = useMutation({
-  //   mutationFn: async () => {
-  //     await apiRequest("POST", "/api/logout");
-  //   },
-  //   onSuccess: () => {
-  //     queryClient.setQueryData(["/api/user"], null);
-  //     queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-  //     setLocation("/auth");
-  //   },
-  //   onError: (error) => {
-  //     console.error("Logout error:", error);
-  //     // Even if logout fails, clear cache and redirect to auth page
-  //     queryClient.setQueryData(["/api/user"], null);
-  //     queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-  //     setLocation("/auth");
-  //   },
-  // });
+  // Use centralized logout utility
+  const logoutMutation = useLogout();
 
-  // TODO: Implement logout functionality when needed
-  // const handleLogout = () => {
-  //   logoutMutation.mutate();
-  // };
+  const handleLogout = () => {
+    logoutMutation.mutate();
+  };
 
   // Profile update mutation
   const updateProfileMutation = useMutation({
@@ -868,7 +852,7 @@ export default function Dashboard() {
                     }
                   } catch (error) {
                     // Error handling is already done in the individual mutations
-                    console.error("Settings update error:", error);
+                    // Silent fail - errors are already shown to user via mutations
                   }
                 }}
               >

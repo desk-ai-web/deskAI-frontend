@@ -37,7 +37,7 @@ export function SubscriptionManager() {
       const status = await stripeUtils.getSubscriptionStatus();
       setSubscription(status.subscription || null);
     } catch (error) {
-      console.error('Error fetching subscription status:', error);
+      // Silent fail for subscription status
     } finally {
       setLoading(false);
     }
@@ -48,8 +48,6 @@ export function SubscriptionManager() {
     try {
       await stripeUtils.redirectToPortal();
     } catch (error: any) {
-      console.error('Error redirecting to portal:', error);
-      
       // Check if it's a portal configuration error
       if (error.message?.includes('No configuration provided') || 
           error.message?.includes('default configuration has not been created') ||
