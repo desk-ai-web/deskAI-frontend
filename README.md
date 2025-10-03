@@ -145,19 +145,6 @@ docker-compose up -d --build
 docker-compose logs -f app
 ```
 
-### Production Checklist
-
-- [ ] All environment variables configured
-- [ ] Database migrations run
-- [ ] SSL certificates installed
-- [ ] Security headers configured
-- [ ] Rate limiting enabled
-- [ ] Logging configured
-- [ ] Health checks accessible
-- [ ] Monitoring set up
-
-For detailed production deployment instructions, see [PRODUCTION_DEPLOYMENT.md](./PRODUCTION_DEPLOYMENT.md).
-
 ## 🔒 Security Features
 
 - **Authentication**: Multi-factor authentication support
@@ -236,47 +223,9 @@ npm run test:coverage
 npm run test:watch
 ```
 
-## 📝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Development Guidelines
-
-- Follow the existing code style
-- Add tests for new features
-- Update documentation as needed
-- Ensure all linting checks pass
-- Follow conventional commit messages
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support
-
-- **Documentation**: Check the docs folder
-- **Issues**: Create a GitHub issue
-- **Discussions**: Use GitHub Discussions
-- **Email**: support@yourdomain.com
-
 ## 🔗 Links
 
 - [Production Deployment Guide](./PRODUCTION_DEPLOYMENT.md)
 - [Database Schema Documentation](./DATABASE_SCHEMA.md)
 - [Stripe Setup Guide](./STRIPE_SETUP.md)
 - [API Documentation](./docs/API.md)
-
-## 🙏 Acknowledgments
-
-- [Drizzle ORM](https://orm.drizzle.team/) for database management
-- [Radix UI](https://www.radix-ui.com/) for accessible components
-- [Tailwind CSS](https://tailwindcss.com/) for styling
-- [Stripe](https://stripe.com/) for payment processing
-
----
-
-**Made with ❤️ by the deskAI team**
