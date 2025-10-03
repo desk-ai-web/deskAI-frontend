@@ -222,10 +222,3 @@ npm run test:coverage
 # Run tests in watch mode
 npm run test:watch
 ```
-
-## 🔗 Links
-
-- [Production Deployment Guide](./PRODUCTION_DEPLOYMENT.md)
-- [Database Schema Documentation](./DATABASE_SCHEMA.md)
-- [Stripe Setup Guide](./STRIPE_SETUP.md)
-- [API Documentation](./docs/API.md)
