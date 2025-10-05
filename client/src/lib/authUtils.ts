@@ -29,14 +29,14 @@ export function useLogout() {
     },
     onSuccess: () => {
       // Clear all authentication-related query data
-      queryClient.setQueryData(["/api/v2/user/data"], null as any);
-      queryClient.setQueryData(["/api/user"], null as any);
+      queryClient.setQueryData([getApiUrl("/api/v2/user/data")], null as any);
+      queryClient.setQueryData([getApiUrl("/api/user")], null as any);
       
       // Invalidate all queries to ensure fresh data on next login
-      queryClient.invalidateQueries({ queryKey: ["/api/v2/user/data"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/subscription"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/usage-stats"] });
+      queryClient.invalidateQueries({ queryKey: [getApiUrl("/api/v2/user/data")] });
+      queryClient.invalidateQueries({ queryKey: [getApiUrl("/api/user")] });
+      queryClient.invalidateQueries({ queryKey: [getApiUrl("/api/subscription")] });
+      queryClient.invalidateQueries({ queryKey: [getApiUrl("/api/usage-stats")] });
       
       // Redirect to auth page
       setLocation("/auth");
@@ -48,12 +48,12 @@ export function useLogout() {
       }
       
       // Even if logout fails, clear local state and redirect
-      queryClient.setQueryData(["/api/v2/user/data"], null as any);
-      queryClient.setQueryData(["/api/user"], null as any);
-      queryClient.invalidateQueries({ queryKey: ["/api/v2/user/data"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/subscription"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/usage-stats"] });
+      queryClient.setQueryData([getApiUrl("/api/v2/user/data")], null as any);
+      queryClient.setQueryData([getApiUrl("/api/user")], null as any);
+      queryClient.invalidateQueries({ queryKey: [getApiUrl("/api/v2/user/data")] });
+      queryClient.invalidateQueries({ queryKey: [getApiUrl("/api/user")] });
+      queryClient.invalidateQueries({ queryKey: [getApiUrl("/api/subscription")] });
+      queryClient.invalidateQueries({ queryKey: [getApiUrl("/api/usage-stats")] });
       
       setLocation("/auth");
     },

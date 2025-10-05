@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Download, Monitor, Smartphone, Apple, AppWindow, Laptop } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { Navigation } from "@/components/navigation";
+import { getApiUrl } from "@/config";
 // Note: Link is available but not currently used
 // import { Link } from "wouter";
 
@@ -20,7 +21,7 @@ export default function Downloads() {
 
   // Detect OS
   const { data: osInfo } = useQuery<OSInfo>({
-    queryKey: ["/api/detect-os"],
+    queryKey: [getApiUrl("/api/detect-os")],
   });
 
   // Set default platform based on detected OS
@@ -35,13 +36,13 @@ export default function Downloads() {
   // Track download mutation
   const trackDownloadMutation = useMutation({
     mutationFn: async (platform: string) => {
-      await apiRequest('POST', '/api/downloads', {
+      await apiRequest('POST', getApiUrl('/api/downloads'), {
         platform,
         version: '1.0.0'
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/downloads/stats'] });
+      queryClient.invalidateQueries({ queryKey: [getApiUrl('/api/downloads/stats')] });
     },
   });
 

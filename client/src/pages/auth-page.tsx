@@ -72,8 +72,8 @@ export default function AuthPage() {
     },
     onSuccess: async () => {
       // Wait for user data to be loaded before redirecting
-      await queryClient.invalidateQueries({ queryKey: ["/api/v2/user/data"] });
-      await queryClient.refetchQueries({ queryKey: ["/api/v2/user/data"] });
+      await queryClient.invalidateQueries({ queryKey: [getApiUrl("/api/v2/user/data")] });
+      await queryClient.refetchQueries({ queryKey: [getApiUrl("/api/v2/user/data")] });
       setLocation("/dashboard");
     },
     onError: (error: any) => {
@@ -115,8 +115,8 @@ export default function AuthPage() {
     },
     onSuccess: async () => {
       // Wait for user data to be loaded before redirecting
-      await queryClient.invalidateQueries({ queryKey: ["/api/v2/user/data"] });
-      await queryClient.refetchQueries({ queryKey: ["/api/v2/user/data"] });
+      await queryClient.invalidateQueries({ queryKey: [getApiUrl("/api/v2/user/data")] });
+      await queryClient.refetchQueries({ queryKey: [getApiUrl("/api/v2/user/data")] });
       setLocation("/dashboard");
     },
     onError: (error: any) => {

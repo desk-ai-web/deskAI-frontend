@@ -47,7 +47,7 @@ export default function Dashboard() {
       return await apiRequest("PUT", getApiUrl("/api/profile"), profileData);
     },
     onSuccess: (updatedUser) => {
-      queryClient.setQueryData(["/api/user"], updatedUser);
+      queryClient.setQueryData([getApiUrl("/api/user")], updatedUser);
       toast({
         title: "Profile Updated",
         description: "Your profile has been updated successfully.",
@@ -70,7 +70,7 @@ export default function Dashboard() {
     },
     onSuccess: () => {
       // Refetch user data to ensure everything is in sync
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      queryClient.invalidateQueries({ queryKey: [getApiUrl("/api/user")] });
       toast({
         title: "Password Changed",
         description: "Your password has been changed successfully.",
@@ -95,7 +95,7 @@ export default function Dashboard() {
       const formData = new FormData();
       formData.append('profilePicture', file);
       
-      const response = await fetch('/api/upload-profile-picture', {
+      const response = await fetch(getApiUrl('/api/upload-profile-picture'), {
         method: 'POST',
         body: formData,
         credentials: 'include',
@@ -216,7 +216,7 @@ export default function Dashboard() {
 
   // Fetch usage statistics
   const { data: _usageStats, isLoading: statsLoading } = useQuery({
-    queryKey: ["/api/usage-stats"],
+    queryKey: [getApiUrl("/api/usage-stats")],
     enabled: isAuthenticated,
     retry: false,
   });

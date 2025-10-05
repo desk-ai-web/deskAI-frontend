@@ -1,4 +1,5 @@
 import { loadStripe } from '@stripe/stripe-js';
+import { getApiUrl } from '@/config';
 
 // Load Stripe with your publishable key
 const stripePublishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
@@ -17,7 +18,7 @@ export const stripeUtils = {
   // Redirect to Stripe checkout
   async redirectToCheckout(planId: string): Promise<void> {
     try {
-      const response = await fetch('/api/create-checkout-session', {
+      const response = await fetch(getApiUrl('/api/create-checkout-session'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -46,7 +47,7 @@ export const stripeUtils = {
   // Redirect to Stripe customer portal
   async redirectToPortal(): Promise<void> {
     try {
-      const response = await fetch('/api/create-portal-session', {
+      const response = await fetch(getApiUrl('/api/create-portal-session'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -83,7 +84,7 @@ export const stripeUtils = {
     };
   }> {
     try {
-      const response = await fetch('/api/subscription', {
+      const response = await fetch(getApiUrl('/api/subscription'), {
         credentials: 'include',
       });
 
