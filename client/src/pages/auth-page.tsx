@@ -14,6 +14,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
 import { Redirect, useLocation } from "wouter";
 import { Navigation } from "@/components/navigation";
+import { getApiUrl } from "@/config";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -261,7 +262,7 @@ export default function AuthPage() {
                       type="button"
                       variant="outline"
                       className="w-full bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white font-medium transition-all duration-200 hover:shadow-md hover:border-gray-400 dark:hover:border-gray-500"
-                      onClick={() => window.location.href = '/api/auth/google'}
+                      onClick={() => window.location.href = getApiUrl('/api/auth/google')}
                     >
                       <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
                         <path
@@ -413,7 +414,7 @@ export default function AuthPage() {
                       type="button"
                       variant="outline"
                       className="w-full bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white font-medium transition-all duration-200 hover:shadow-md hover:border-gray-400 dark:hover:border-gray-500"
-                      onClick={() => window.location.href = '/api/auth/google'}
+                      onClick={() => window.location.href = getApiUrl('/api/auth/google')}
                     >
                       <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
                         <path

@@ -28,8 +28,14 @@ export function getApiUrl(path: string): string {
     return path;
   }
   
+  // Ensure API_URL has protocol (in case user forgot https://)
+  let baseUrl = API_URL;
+  if (baseUrl && !baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
+    baseUrl = `https://${baseUrl}`;
+  }
+  
   // In development, use proxy (empty API_URL means relative paths)
   // In production, use full Railway URL
-  return `${API_URL}${path}`;
+  return `${baseUrl}${path}`;
 }
 
