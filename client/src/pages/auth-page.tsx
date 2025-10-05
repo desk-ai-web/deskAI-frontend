@@ -105,8 +105,13 @@ export default function AuthPage() {
 
   const registerMutation = useMutation({
     mutationFn: async (data: RegisterData) => {
-      const res = await apiRequest("POST", getApiUrl("/api/register"), data);
-      return await res.json();
+      const res = await apiRequest("POST", getApiUrl("/api/v2/register"), data);
+      const json = await res.json();
+      // Persist JWT for future requests
+      if (json?.data?.token) {
+        localStorage.setItem('deskai_jwt', json.data.token);
+      }
+      return json;
     },
     onSuccess: async () => {
       // Wait for user data to be loaded before redirecting
