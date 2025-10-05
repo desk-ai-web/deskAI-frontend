@@ -177,7 +177,7 @@ docker-compose logs -f app
 - Memory usage monitoring
 - Error rate tracking
 
-## 🗄️ Database Schema
+## 🗄️ Database Schema (deployed on Supabase)
 
 The application uses PostgreSQL with the following key tables:
 
