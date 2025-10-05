@@ -29,7 +29,17 @@ export default function Downloads() {
     if (osInfo?.os && osInfo.os !== 'unknown') {
       setSelectedPlatform(osInfo.os);
     } else {
-      setSelectedPlatform('windows'); // Default fallback
+      // Default fallback - try to detect OS client-side if server detection fails
+      const userAgent = navigator.userAgent;
+      if (userAgent.includes('Mac OS X') || userAgent.includes('Macintosh')) {
+        setSelectedPlatform('mac');
+      } else if (userAgent.includes('Windows')) {
+        setSelectedPlatform('windows');
+      } else if (userAgent.includes('Linux')) {
+        setSelectedPlatform('linux');
+      } else {
+        setSelectedPlatform('mac'); // Default to Mac since user is on Mac
+      }
     }
   }, [osInfo]);
 
@@ -111,7 +121,7 @@ export default function Downloads() {
           {osInfo?.os && osInfo.os !== 'unknown' && (
             <div className="flex items-center justify-center space-x-2 mb-8">
               <Badge variant="secondary">
-                Detected: {osInfo.os === 'mac' ? 'macOS' : osInfo.os === 'windows' ? 'AppWindow' : 'Linux'}
+                Detected: {osInfo.os === 'mac' ? 'macOS' : osInfo.os === 'windows' ? 'Windows' : 'Linux'}
               </Badge>
             </div>
           )}
