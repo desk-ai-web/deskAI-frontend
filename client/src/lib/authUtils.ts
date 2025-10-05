@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "./queryClient";
 import { useLocation } from "wouter";
+import { getApiUrl } from "@/config";
 
 /**
  * Centralized logout utility hook
@@ -17,7 +18,7 @@ export function useLogout() {
       
       // Notify server to clear session (for completeness)
       try {
-        await apiRequest("POST", "/api/logout");
+        await apiRequest("POST", getApiUrl("/api/logout"));
       } catch (error) {
         // Ignore server errors - local logout is the primary concern
         // Log in development only

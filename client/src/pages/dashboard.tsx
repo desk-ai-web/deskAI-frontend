@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { apiRequest } from "@/lib/queryClient";
+import { getApiUrl } from "@/config";
 import { Eye, User, Download, BarChart3, Timer, Calendar, Clock, Focus, AlertTriangle, Settings, Save } from "lucide-react";
 import { useLocation } from "wouter";
 import { SubscriptionManager } from "@/components/subscription-manager";
@@ -43,7 +44,7 @@ export default function Dashboard() {
   // Profile update mutation
   const updateProfileMutation = useMutation({
     mutationFn: async (profileData: { firstName: string; lastName: string; email: string }) => {
-      return await apiRequest("PUT", "/api/profile", profileData);
+      return await apiRequest("PUT", getApiUrl("/api/profile"), profileData);
     },
     onSuccess: (updatedUser) => {
       queryClient.setQueryData(["/api/user"], updatedUser);
@@ -65,7 +66,7 @@ export default function Dashboard() {
   // Password change mutation
   const changePasswordMutation = useMutation({
     mutationFn: async (passwordData: { currentPassword: string; newPassword: string }) => {
-      return await apiRequest("PUT", "/api/change-password", passwordData);
+      return await apiRequest("PUT", getApiUrl("/api/change-password"), passwordData);
     },
     onSuccess: () => {
       // Refetch user data to ensure everything is in sync

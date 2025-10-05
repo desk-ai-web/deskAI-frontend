@@ -62,7 +62,7 @@ export default function AuthPage() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginData) => {
-      const res = await apiRequest("POST", "/api/v2/login", data);
+      const res = await apiRequest("POST", getApiUrl("/api/v2/login"), data);
       const json = await res.json();
       // Persist JWT for future requests
       if (json?.data?.token) {
@@ -105,7 +105,7 @@ export default function AuthPage() {
 
   const registerMutation = useMutation({
     mutationFn: async (data: RegisterData) => {
-      const res = await apiRequest("POST", "/api/register", data);
+      const res = await apiRequest("POST", getApiUrl("/api/register"), data);
       return await res.json();
     },
     onSuccess: async () => {
