@@ -1,9 +1,12 @@
 {
   "rewrites": [
+    { "source": "/assets/:path*", "destination": "/assets/:path*" },
     {
-      "source": "/((?!assets|icon|favicon|.*\\.(png|jpg|jpeg|gif|ico|svg|webp)).*)",
-      "destination": "/index.html"
-    }
+      "source": "/icon_with_background.png",
+      "destination": "/icon_with_background.png"
+    },
+    { "source": "/icon.ico", "destination": "/icon.ico" },
+    { "source": "/:path*", "destination": "/index.html" }
   ],
   "headers": [
     {
