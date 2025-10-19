@@ -107,14 +107,23 @@ export const stripeUtils = {
 
   // Check if user is on trial
   isOnTrial(subscription: any): boolean {
-    if (!subscription || !subscription.trialEnd) {
+    if (!subscription) {
       return false;
     }
     
-    const trialEnd = new Date(subscription.trialEnd);
-    const now = new Date();
+    // If status is explicitly 'trialing', they're on trial
+    // If status is 'active', they're a paying customer (even if trialEnd exists as historical data)
+    if (subscription.status === 'active') {
+      return false;
+    }
     
-    return trialEnd > now;
+    if (subscription.status === 'trialing' && subscription.trialEnd) {
+      const trialEnd = new Date(subscription.trialEnd);
+      const now = new Date();
+      return trialEnd > now;
+    }
+    
+    return false;
   },
 
   // Check if subscription is active
@@ -132,15 +141,17 @@ export const stripeUtils = {
       return 'No subscription';
     }
 
-    if (this.isOnTrial(subscription)) {
-      return 'Trial';
-    }
-
+    // Check actual status first (this is more reliable than trialEnd date)
     switch (subscription.status) {
       case 'active':
         return 'Active';
       case 'trialing':
-        return 'Trial';
+        // Double-check if trial has actually ended
+        if (this.isOnTrial(subscription)) {
+          return 'Trial';
+        }
+        // If trial ended but status is still 'trialing', treat as active
+        return 'Active';
       case 'past_due':
         return 'Past Due';
       case 'canceled':

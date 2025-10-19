@@ -1,16 +1,16 @@
-import { Moon, Sun, Monitor } from "lucide-react";
+import { Moon, Sun, Monitor, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/hooks/useTheme";
 
 export function ThemeToggle() {
-  const { theme: _theme, setTheme, isDark: _isDark } = useTheme();
-  // TODO: Use _theme and _isDark for theme-specific features or remove if not needed
+  const { theme, setTheme } = useTheme();
 
   return (
     <DropdownMenu>
@@ -21,19 +21,24 @@ export function ThemeToggle() {
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
-          <Sun className="mr-2 h-4 w-4" />
-          <span>Light</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
-          <Moon className="mr-2 h-4 w-4" />
-          <span>Dark</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
-          <Monitor className="mr-2 h-4 w-4" />
-          <span>System</span>
-        </DropdownMenuItem>
+      <DropdownMenuContent align="end" className="w-40 space-y-1">
+        <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
+          <DropdownMenuRadioItem value="light" className="flex items-center gap-2">
+            <Sun className="h-4 w-4" />
+            <span className="flex-1">Light</span>
+            {theme === "light" && <Check className="h-4 w-4 text-primary" />}
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="dark" className="flex items-center gap-2">
+            <Moon className="h-4 w-4" />
+            <span className="flex-1">Dark</span>
+            {theme === "dark" && <Check className="h-4 w-4 text-primary" />}
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="system" className="flex items-center gap-2">
+            <Monitor className="h-4 w-4" />
+            <span className="flex-1">System</span>
+            {theme === "system" && <Check className="h-4 w-4 text-primary" />}
+          </DropdownMenuRadioItem>
+        </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );

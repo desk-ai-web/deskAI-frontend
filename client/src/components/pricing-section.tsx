@@ -108,9 +108,9 @@ export function PricingSection() {
                   "Full feature access for 14 days",
                   "Advanced AI tracking",
                   "Posture monitoring", 
+                  "Blink tracking",
                   "Smart focus timer",
-                  "Multi-screen support",
-                  "Email support"
+                  "Multi-screen support"
                 ].map((feature, index) => (
                   <li key={index} className="flex items-center space-x-3">
                     <Check className="w-5 h-5 text-secondary" />

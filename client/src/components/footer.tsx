@@ -1,4 +1,3 @@
-import { Eye } from "lucide-react";
 import { SiX, SiGithub, SiLinkedin } from "react-icons/si";
 import { Link } from "wouter";
 
@@ -16,9 +15,12 @@ export function Footer() {
         <div className="grid md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center space-x-2 mb-6">
-              <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center">
-                <Eye className="w-4 h-4 text-white" />
-              </div>
+              <img
+                src="/icon_with_background.png"
+                alt="desk.ai icon"
+                className="w-8 h-8"
+                loading="lazy"
+              />
               <span className="text-xl font-bold text-gray-700">desk.ai</span>
             </div>
             <p className="text-gray-600 mb-6">Fix your screen habits without breaking your flow</p>

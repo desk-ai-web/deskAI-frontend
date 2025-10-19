@@ -43,7 +43,7 @@ export default function Dashboard() {
 
   // Profile update mutation
   const updateProfileMutation = useMutation({
-    mutationFn: async (profileData: { firstName: string; lastName: string; email: string }) => {
+    mutationFn: async (profileData: { firstName: string; lastName: string }) => {
       return await apiRequest("PUT", getApiUrl("/api/profile"), profileData);
     },
     onSuccess: (updatedUser) => {
@@ -603,9 +603,9 @@ export default function Dashboard() {
           
           <div className="space-y-6">
             {/* Profile Picture Section */}
-            <div className="text-center">
-              <div className="relative mx-auto mb-3">
-                <div className="w-20 h-20 rounded-full overflow-hidden mx-auto">
+            <div className="text-center mb-6">
+              <div className="relative inline-block mx-auto">
+                <div className="w-24 h-24 rounded-full overflow-hidden ring-4 ring-gray-100 dark:ring-gray-700 shadow-lg">
                   {user?.profileImageUrl ? (
                     <img 
                       src={user.profileImageUrl} 
@@ -622,46 +622,52 @@ export default function Dashboard() {
                       }}
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-primary to-secondary items-center justify-center text-white text-2xl font-bold">
+                    <div className="w-full h-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-3xl font-bold">
                       {firstName && lastName ? `${firstName.charAt(0)}${lastName.charAt(0)}` : 
                        user?.firstName && user?.lastName ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}` :
                        user?.email ? user.email.charAt(0).toUpperCase() : 'U'}
                     </div>
                   )}
                   {/* Fallback div that shows when image fails to load */}
-                  <div className="w-full h-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-2xl font-bold absolute inset-0 opacity-0">
+                  <div className="w-full h-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-3xl font-bold absolute inset-0 opacity-0">
                     {firstName && lastName ? `${firstName.charAt(0)}${lastName.charAt(0)}` : 
                      user?.firstName && user?.lastName ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}` :
                      user?.email ? user.email.charAt(0).toUpperCase() : 'U'}
                   </div>
                 </div>
                 
-                {/* Upload button - positioned relative to profile picture */}
+                {/* Upload button - positioned at bottom-right with offset */}
                 {!user?.googleId && isAuthenticated && (
                   <Button
                     size="sm"
-                    variant="outline"
-                    className="absolute -bottom-2 -right-2 w-8 h-8 p-0 rounded-full bg-white border-2 border-gray-200 hover:border-primary shadow-md"
+                    className="absolute bottom-1 right-1 w-9 h-9 p-0 rounded-full shadow-lg gradient-bg hover:opacity-90 ring-2 ring-white dark:ring-gray-800"
                     onClick={() => document.getElementById('profile-picture-input')?.click()}
                     disabled={isUploadingProfilePicture}
-                    title={isUploadingProfilePicture ? "Uploading..." : `Change ${user?.firstName}'s profile picture`}
+                    title={isUploadingProfilePicture ? "Uploading..." : "Change profile picture"}
                   >
                     {isUploadingProfilePicture ? (
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                     ) : (
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
                     )}
                   </Button>
                 )}
               </div>
               
-              <p className="text-sm text-gray-600">
-                {user?.googleId ? `${user.firstName}'s profile picture` : 
-                 !isAuthenticated ? 'Please log in to upload' :
-                 isUploadingProfilePicture ? 'Uploading...' : `${user?.firstName || 'User'}'s profile picture`}
-              </p>
+              {!user?.googleId && isAuthenticated && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
+                  {isUploadingProfilePicture ? "Uploading..." : "Click camera icon to change • Max 2MB"}
+                </p>
+              )}
+              
+              {user?.googleId && (
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">
+                  Profile picture managed by Google
+                </p>
+              )}
               
               {/* Hidden file input for profile picture upload */}
               {!user?.googleId && isAuthenticated && (
@@ -707,9 +713,11 @@ export default function Dashboard() {
                     id="email"
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    disabled
+                    className="bg-gray-100 dark:bg-gray-800 cursor-not-allowed opacity-60"
                     placeholder="Enter email address"
                   />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Email cannot be changed</p>
                 </div>
               </CardContent>
             </Card>
@@ -768,14 +776,9 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium">Login Method</p>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
                       {user?.googleId ? 'Google OAuth' : 'Email & Password'}
                     </p>
-                    {user?.googleId && (
-                      <p className="text-xs text-orange-600 mt-1">
-                        Password removed when Google account was linked
-                      </p>
-                    )}
                   </div>
                   <Badge variant={user?.googleId ? 'default' : 'secondary'}>
                     {user?.googleId ? 'Google' : 'Email'}
@@ -784,7 +787,7 @@ export default function Dashboard() {
                 <Separator className="my-4" />
                 <div>
                   <p className="font-medium">Member Since</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
                     {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'long',
@@ -800,6 +803,7 @@ export default function Dashboard() {
               <Button 
                 variant="outline" 
                 onClick={() => setIsSettingsOpen(false)}
+                className="hover:bg-blue-50 dark:hover:bg-blue-950/50 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-600 dark:hover:border-blue-400"
               >
                 Cancel
               </Button>
@@ -808,7 +812,7 @@ export default function Dashboard() {
                 disabled={updateProfileMutation.isPending || changePasswordMutation.isPending}
                 onClick={async () => {
                   // Validate form
-                  if (!firstName || !lastName || !email) {
+                  if (!firstName || !lastName) {
                     toast({
                       title: "Validation Error",
                       description: "Please fill in all required fields",
@@ -840,7 +844,7 @@ export default function Dashboard() {
 
                   try {
                     // Update profile first
-                    await updateProfileMutation.mutateAsync({ firstName, lastName, email });
+                    await updateProfileMutation.mutateAsync({ firstName, lastName });
                     
                     // Then change password if needed
                     if (shouldChangePassword) {

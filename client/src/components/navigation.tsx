@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Eye, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useLocation, Link } from "wouter";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -31,12 +31,15 @@ export function Navigation() {
     <nav className="fixed top-0 w-full z-50 glass blur-effect">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center">
-              <Eye className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-xl font-bold gradient-text"><Link href="/">desk.ai</Link></span>
-          </div>
+          <Link href="/" className="flex items-center space-x-2 cursor-pointer">
+            <img
+              src="/icon_with_background.png"
+              alt="desk.ai icon"
+              className="w-8 h-8"
+              loading="lazy"
+            />
+            <span className="text-xl font-bold gradient-text">desk.ai</span>
+          </Link>
           
           {/* Desktop Navigation */}
           {location === "/" && (
@@ -76,9 +79,9 @@ export function Navigation() {
                   <span className="text-sm font-medium">{user?.firstName} {user?.lastName}</span>
                 </div>
                 <Button 
-                  variant="ghost"
+                  variant="outline"
                   onClick={() => setLocation('/dashboard')}
-                  className="hover:bg-blue-50 dark:hover:bg-blue-950/50 hover:text-blue-600 dark:hover:text-blue-400"
+                  className="border-blue-600/30 dark:border-blue-400/40 bg-white/70 dark:bg-blue-950/40 hover:bg-blue-50 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-600 dark:hover:border-blue-400 shadow-sm"
                 >
                   Dashboard
                 </Button>
@@ -94,9 +97,9 @@ export function Navigation() {
             ) : (
               <>
                 <Button 
-                  variant="ghost" 
+                  variant="outline" 
                   onClick={() => setLocation('/auth')}
-                  className="hover:bg-blue-50 dark:hover:bg-blue-950/50 hover:text-blue-600 dark:hover:text-blue-400"
+                  className="border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-600 dark:hover:border-blue-400"
                 >
                   Sign In
                 </Button>

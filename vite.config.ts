@@ -12,7 +12,6 @@ export default defineConfig({
       // Add explicit configuration to prevent preamble detection issues
       jsxRuntime: 'automatic'
     }),
-    // No Replit plugins
   ],
   resolve: {
     alias: {
@@ -33,7 +32,7 @@ export default defineConfig({
     },
     proxy: {
       '/api': {
-        target: process.env.VITE_API_URL || 'http://localhost:5173',
+        target: process.env.VITE_API_URL || 'http://localhost:3000',
         changeOrigin: true,
         secure: false,
       },

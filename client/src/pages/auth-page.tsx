@@ -41,6 +41,10 @@ export default function AuthPage() {
   // Check for OAuth errors in URL
   const urlParams = new URLSearchParams(window.location.search);
   const oauthError = urlParams.get('error');
+  
+  // Check if this is a desktop authentication request
+  const fromDesktop = urlParams.get('from') === 'desktop';
+  const state = urlParams.get('state');
 
   const loginForm = useForm<LoginData>({
     resolver: zodResolver(loginSchema),
@@ -74,7 +78,14 @@ export default function AuthPage() {
       // Wait for user data to be loaded before redirecting
       await queryClient.invalidateQueries({ queryKey: [getApiUrl("/api/v2/user/data")] });
       await queryClient.refetchQueries({ queryKey: [getApiUrl("/api/v2/user/data")] });
-      setLocation("/dashboard");
+      
+      // If from desktop, redirect to desktop callback
+      if (fromDesktop && state) {
+        window.location.href = getApiUrl(`/api/auth/desktop/callback?state=${state}`);
+      } else {
+        // Normal web flow
+        setLocation("/dashboard");
+      }
     },
     onError: (error: any) => {
       // Log errors in development only
@@ -117,7 +128,14 @@ export default function AuthPage() {
       // Wait for user data to be loaded before redirecting
       await queryClient.invalidateQueries({ queryKey: [getApiUrl("/api/v2/user/data")] });
       await queryClient.refetchQueries({ queryKey: [getApiUrl("/api/v2/user/data")] });
-      setLocation("/dashboard");
+      
+      // If from desktop, redirect to desktop callback
+      if (fromDesktop && state) {
+        window.location.href = getApiUrl(`/api/auth/desktop/callback?state=${state}`);
+      } else {
+        // Normal web flow
+        setLocation("/dashboard");
+      }
     },
     onError: (error: any) => {
       // Log errors in development only
@@ -157,12 +175,23 @@ export default function AuthPage() {
           <div className="w-full max-w-md">
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                Welcome back
+                {fromDesktop ? "Sign in to DeskAI Desktop" : "Welcome back"}
               </h1>
               <p className="text-gray-600 dark:text-gray-300">
-                Sign in to your account or create a new one
+                {fromDesktop 
+                  ? "Please sign in to continue using the desktop app" 
+                  : "Sign in to your account or create a new one"}
               </p>
             </div>
+
+            {fromDesktop && (
+              <Alert className="mb-4 border-primary/50 bg-primary/10">
+                <Monitor className="h-4 w-4" />
+                <AlertDescription>
+                  Signing in for DeskAI Desktop App
+                </AlertDescription>
+              </Alert>
+            )}
 
             <Card className="glass border-0 shadow-xl dark:bg-gray-800/50 dark:border-gray-700">
               <CardHeader>
@@ -267,7 +296,12 @@ export default function AuthPage() {
                       type="button"
                       variant="outline"
                       className="w-full bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white font-medium transition-all duration-200 hover:shadow-md hover:border-gray-400 dark:hover:border-gray-500"
-                      onClick={() => window.location.href = getApiUrl('/api/auth/google')}
+                      onClick={() => {
+                        const authUrl = fromDesktop && state 
+                          ? getApiUrl(`/api/auth/google?from=desktop&state=${state}`)
+                          : getApiUrl('/api/auth/google');
+                        window.location.href = authUrl;
+                      }}
                     >
                       <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
                         <path
@@ -419,7 +453,12 @@ export default function AuthPage() {
                       type="button"
                       variant="outline"
                       className="w-full bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white font-medium transition-all duration-200 hover:shadow-md hover:border-gray-400 dark:hover:border-gray-500"
-                      onClick={() => window.location.href = getApiUrl('/api/auth/google')}
+                      onClick={() => {
+                        const authUrl = fromDesktop && state 
+                          ? getApiUrl(`/api/auth/google?from=desktop&state=${state}`)
+                          : getApiUrl('/api/auth/google');
+                        window.location.href = authUrl;
+                      }}
                     >
                       <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
                         <path

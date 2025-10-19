@@ -20,19 +20,13 @@ export function useTheme() {
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
-    // Check localStorage first
-    const savedTheme = localStorage.getItem('theme') as Theme;
-    if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
-      return savedTheme;
+    const savedTheme = localStorage.getItem('theme') as Theme
+    if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark' || savedTheme === 'system')) {
+      return savedTheme
     }
-    
-    // Check system preference
-    if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'system';
-    }
-    
-    return 'light';
-  });
+
+    return 'system'
+  })
 
   const [isDark, setIsDark] = useState(false);
 
@@ -71,13 +65,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [theme]);
 
   const handleSetTheme = (newTheme: Theme) => {
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-  };
+    setTheme(newTheme)
+    localStorage.setItem('theme', newTheme)
+  }
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme: handleSetTheme, isDark }}>
       {children}
     </ThemeContext.Provider>
-  );
+  )
 }
