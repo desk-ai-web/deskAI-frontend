@@ -184,13 +184,19 @@ export function HeroSection() {
               <div className="w-6 h-6 bg-secondary rounded-full flex items-center justify-center">
                 <Check className="w-3 h-3 text-white" />
               </div>
-              <span className="text-lg text-gray-700">Tracks your screen habits via webcam</span>
+              <span className="text-lg text-gray-700">Tracks posture, movement and blink rate via webcam</span>
             </div>
             <div className="flex items-center space-x-4">
               <div className="w-6 h-6 bg-secondary rounded-full flex items-center justify-center">
                 <Check className="w-3 h-3 text-white" />
               </div>
-              <span className="text-lg text-gray-700">Smart reminders that adapt to your workflow</span>
+              <span className="text-lg text-gray-700">Auto-detects bad screen habits as they happen</span>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="w-6 h-6 bg-secondary rounded-full flex items-center justify-center">
+                <Check className="w-3 h-3 text-white" />
+              </div>
+              <span className="text-lg text-gray-700">Conditions better habits via smart reminders</span>
             </div>
             <div className="flex items-center space-x-4">
               <div className="w-6 h-6 bg-secondary rounded-full flex items-center justify-center">
