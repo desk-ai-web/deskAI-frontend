@@ -1,7 +1,8 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Eye, Ruler, Monitor, Settings, Spline, Sliders } from "lucide-react";
-import multiScreenVideo from "@/assets/hunch_detection.webm";
-import tailoredImage from "@/assets/tailored.png";
+import multiScreenVideo from "@/assets/hunch_demo_laptop.webm";
+import focusTimerVideo from "@/assets/demo_timer_small.webm";
+import blinkDetectionVideo from "@/assets/blink_detection.webm";
 
 export function FeaturesSection() {
   return (
@@ -75,12 +76,18 @@ export function FeaturesSection() {
         {/* Posture Section */}
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div className="relative order-2 lg:order-1 mt-24">
-            {/* Healthy posture at desk image */}
-            <img 
-              src={tailoredImage}
-              alt="Tailored posture and movement tracking interface showing customizable settings" 
-              className="rounded-2xl shadow-2xl hover-lift w-full" 
-            />
+            {/* Tailored posture and movement tracking video */}
+            <video
+              className="rounded-2xl shadow-2xl hover-lift w-full"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+            >
+              <source src={blinkDetectionVideo} type="video/webm" />
+              Blink detection demo video.
+            </video>
           </div>
           
           <div className="space-y-8 order-1 lg:order-2">
@@ -175,13 +182,19 @@ export function FeaturesSection() {
             </div>
             
             <div className="relative">
-              {/* Focus and productivity image */}
-              <img 
-                src="https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
-                alt="Clean organized workspace promoting focus and productivity" 
-                className="rounded-2xl shadow-2xl hover-lift w-full" 
-              />
-              
+              {/* Focus and productivity video */}
+              <video
+                className="rounded-2xl shadow-2xl hover-lift w-full"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="auto"
+              >
+                <source src={focusTimerVideo} type="video/webm" />
+                Focus timer demo.
+              </video>
+
               {/* Timer UI overlay */}
               <div className="absolute top-8 left-8 glass rounded-2xl p-6 max-w-xs">
                 <div className="text-center">
