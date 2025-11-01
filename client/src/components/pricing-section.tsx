@@ -112,7 +112,7 @@ export function PricingSection() {
                   "Screen distance monitoring",
                   "Smart reminders",
                   "Integrated focus timer",
-                  "Progress analytics"
+                  "Progress analytics",
                   "Basic support"
                 ].map((feature, index) => (
                   <li key={index} className="flex items-center space-x-3">
