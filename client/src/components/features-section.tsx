@@ -75,7 +75,7 @@ export function FeaturesSection() {
         
         {/* Posture Section */}
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <div className="relative order-2 lg:order-1 mt-24 flex justify-center">
+            <div className="relative order-2 lg:order-1 mt-24 flex justify-center">
             {/* Tailored posture and movement tracking video */}
             <video
               className="rounded-2xl shadow-2xl hover-lift w-full max-w-md"
@@ -194,6 +194,13 @@ export function FeaturesSection() {
                 <source src={focusTimerVideo} type="video/webm" />
                 Focus timer demo.
               </video>
+
+              <div className="absolute -bottom-4 -left-4 glass rounded-2xl p-4 max-w-xs animate-float" style={{animationDelay: '1s'}}>
+                <div className="text-center">
+                  <p className="text-sm font-semibold text-gray-800">Detecting your blinks</p>
+                  <p className="text-xs text-gray-600">(marked in red)</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
