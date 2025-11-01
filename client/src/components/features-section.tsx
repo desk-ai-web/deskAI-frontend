@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Eye, Ruler, Monitor, Settings, Spline, Sliders } from "lucide-react";
-import multiScreenImage from "@/assets/multi-screen.png";
+import multiScreenVideo from "@/assets/hunch_detection.webm";
 import tailoredImage from "@/assets/tailored.png";
 
 export function FeaturesSection() {
@@ -57,12 +57,18 @@ export function FeaturesSection() {
           </div>
           
           <div className="relative">
-            {/* Eye strain relief image */}
-            <img 
-              src={multiScreenImage}
-              alt="Multi-screen setup showing DeskAI monitoring across multiple displays" 
-              className="rounded-2xl shadow-2xl hover-lift w-full" 
-            />
+            {/* Eye strain relief video */}
+            <video
+              className="rounded-2xl shadow-2xl hover-lift w-full"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+            >
+              <source src={multiScreenVideo} type="video/webm" />
+              Demo showing hunch detection on mac.
+            </video>
           </div>
         </div>
         
