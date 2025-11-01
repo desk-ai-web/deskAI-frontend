@@ -23,6 +23,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Redirect, useLocation } from 'wouter';
 import { Navigation } from '@/components/navigation';
 import { getApiUrl } from '@/config';
+import heroIcon from '@/assets/icon.png';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -774,7 +775,12 @@ export default function AuthPage() {
           <div className="max-w-md text-center">
             <div className="relative mb-8">
               <div className="w-32 h-32 mx-auto bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                <Monitor className="w-16 h-16 text-white" />
+                <img
+                  src={heroIcon}
+                  alt="Person working at a computer"
+                  className="w-16 h-16 object-contain"
+                  draggable={false}
+                />
 
                 {/* Eye blink monitoring indicators */}
                 <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-400 rounded-full flex items-center justify-center animate-pulse">
@@ -792,23 +798,23 @@ export default function AuthPage() {
               Monitor Your Screen Habits
             </h2>
             <p className="text-lg text-white/90 mb-6">
-              Track eye blinks, posture, and focus sessions with AI-powered
-              monitoring. Improve your health while maintaining productivity.
+              Track posture, movement, eye-blinks and screen distance with AI-powered
+              monitoring. Improve your screen habits while staying productive.
             </p>
 
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="bg-white/10 dark:bg-gray-700/30 rounded-lg p-3 backdrop-blur-sm">
-                <div className="text-green-400 font-semibold">Eye Tracking</div>
+                <div className="text-green-400 font-semibold">Screen Habit Tracking</div>
                 <div className="text-white/80 dark:text-gray-200">
-                  Real-time blink monitoring
+                  Automatic AI-based detection
                 </div>
               </div>
               <div className="bg-white/10 dark:bg-gray-700/30 rounded-lg p-3 backdrop-blur-sm">
                 <div className="text-green-400 font-semibold">
-                  Posture Alert
+                  Smart Reminders
                 </div>
                 <div className="text-white/80 dark:text-gray-200">
-                  Smart posture detection
+                  Reactive notifications
                 </div>
               </div>
             </div>

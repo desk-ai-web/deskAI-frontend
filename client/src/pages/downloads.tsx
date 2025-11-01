@@ -186,7 +186,7 @@ export default function Downloads() {
           </Button>
           
           <p className="text-sm text-gray-600 mt-4">
-            Free to download • No credit card required • Start improving your habits today
+            Free to download • No credit card required • Start improving your bad screen habits today
           </p>
         </div>
 
@@ -208,7 +208,7 @@ export default function Downloads() {
                 <Download className="w-6 h-6 text-white" />
               </div>
               <h3 className="font-semibold mb-2">Gentle Reminders</h3>
-              <p className="text-sm text-gray-600">Non-intrusive notifications that adapt to your workflow</p>
+              <p className="text-sm text-gray-600">Smart notifications that adapt to your workflow</p>
             </div>
             
             <div className="text-center">
@@ -224,7 +224,7 @@ export default function Downloads() {
                 <Apple className="w-6 h-6 text-white" />
               </div>
               <h3 className="font-semibold mb-2">Cross Platform</h3>
-              <p className="text-sm text-gray-600">Works seamlessly across all your devices</p>
+              <p className="text-sm text-gray-600">Works seamlessly across operating systems</p>
             </div>
           </div>
         </div>
@@ -242,7 +242,7 @@ export default function Downloads() {
               <ul className="space-y-2 text-sm text-gray-600">
                 <li>• macOS 10.14 (Mojave) or later</li>
                 <li>• Intel or Apple Silicon processor</li>
-                <li>• 100 MB free disk space</li>
+                <li>• 400 MB free disk space</li>
                 <li>• Webcam (built-in or external)</li>
               </ul>
             </div>
@@ -255,7 +255,7 @@ export default function Downloads() {
               <ul className="space-y-2 text-sm text-gray-600">
                 <li>• Windows 10 (v1903) or later</li>
                 <li>• x64 processor</li>
-                <li>• 100 MB free disk space</li>
+                <li>• 400 MB free disk space</li>
                 <li>• Webcam (built-in or external)</li>
               </ul>
             </div>
@@ -268,7 +268,7 @@ export default function Downloads() {
               <ul className="space-y-2 text-sm text-gray-600">
                 <li>• Ubuntu 18.04+ or equivalent</li>
                 <li>• x64 processor</li>
-                <li>• 100 MB free disk space</li>
+                <li>• 300 MB free disk space</li>
                 <li>• Webcam (built-in or external)</li>
               </ul>
             </div>

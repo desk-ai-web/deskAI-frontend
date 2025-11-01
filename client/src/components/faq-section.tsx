@@ -12,7 +12,7 @@ export function FaqSection() {
     },
     {
       question: "What platforms are supported?",
-      answer: "desk.ai is available for macOS (Apple), Windows, and Linux. The app runs natively on each platform and requires a webcam for full functionality.."
+      answer: "desk.ai is available for macOS (Apple), Windows, and Linux. The app runs natively on each platform and requires a webcam for full functionality."
     },
     {
       question: "How much system resources does it use?",

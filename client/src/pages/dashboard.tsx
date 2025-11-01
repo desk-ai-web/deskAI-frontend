@@ -295,7 +295,7 @@ export default function Dashboard() {
             Welcome back, {user?.firstName}!
           </h1>
           <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
-            Here&apos;s your screen health overview and account details.
+            Here&apos;s your progress overview and account details.
           </p>
         </div>
 
