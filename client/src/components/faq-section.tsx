@@ -8,11 +8,11 @@ export function FaqSection() {
   const faqs = [
     {
       question: "Is my webcam data really private?",
-      answer: "Yes, absolutely. All video processing happens locally on your device using advanced computer vision. No webcam data, images, or video ever leaves your computer."
+      answer: "Yes! All video processing happens locally on your device. No webcam data, images, or video ever leave your computer."
     },
     {
       question: "What platforms are supported?",
-      answer: "desk.ai is available for macOS, Windows, and Linux. The app runs natively on each platform and requires a webcam for full functionality. We support the latest versions of each operating system."
+      answer: "desk.ai is available for macOS (Apple), Windows, and Linux. The app runs natively on each platform and requires a webcam for full functionality.."
     },
     {
       question: "How much system resources does it use?",
@@ -20,15 +20,15 @@ export function FaqSection() {
     },
     {
       question: "Can I customize the reminders?",
-      answer: "Absolutely! You can adjust reminder frequency, sensitivity levels, and choose different reminder styles."
+      answer: "Yes, you can adjust the reminder size and decide the blur intensity of the screen (incl. no blur to only use icon reminders)."
     },
     {
       question: "Do I need to keep the app running all the time?",
-      answer: "desk.ai is designed to run in the background and only actively monitors when you're working. You can easily pause tracking when needed, and the app will automatically resume when you return to work."
+      answer: "desk.ai is designed to run in the background while you are working on your computer. The app interface is only used to manage your settings and start the individual trackings."
     },
     {
-      question: "What&apos;s the difference between the free and paid versions?",
-                  answer: "The free version includes trial for fourteen days post that you would need to purchase the pro version for €2.99/month to continue using the app."
+      question: "What is the difference between the free and paid versions?",
+      answer: "The free version includes trial for 7 days. After that, you would need to purchase the pro version to continue using the app."
     }
   ];
 

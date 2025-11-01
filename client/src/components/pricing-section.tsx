@@ -87,7 +87,7 @@ export function PricingSection() {
           <h2 className="text-4xl lg:text-5xl font-bold mb-6">
             Start with a <span className="gradient-text">free trial</span>
           </h2>
-          <p className="text-xl text-gray-600">Try all features free for 14 days, then choose your plan</p>
+          <p className="text-xl text-gray-600">Try all features free for 7 days, then choose your plan</p>
         </div>
         
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -99,18 +99,21 @@ export function PricingSection() {
                 €0
                 <span className="text-lg text-gray-600 font-normal">/month</span>
               </div>
-              <p className="text-gray-600">14-day free trial, no credit card required</p>
+              <p className="text-gray-600">7-day free trial, no credit card required</p>
             </CardHeader>
             
             <CardContent>
               <ul className="space-y-4 mb-8">
                 {[
-                  "Full feature access for 14 days",
-                  "Advanced AI tracking",
-                  "Posture monitoring", 
-                  "Blink tracking",
-                  "Smart focus timer",
-                  "Multi-screen support"
+                  "Full feature access for 7 days",
+                  "Posture tracking",
+                  "Movement analysis",
+                  "Blink detection", 
+                  "Screen distance monitoring",
+                  "Smart reminders",
+                  "Integrated focus timer",
+                  "Progress analytics"
+                  "Basic support"
                 ].map((feature, index) => (
                   <li key={index} className="flex items-center space-x-3">
                     <Check className="w-5 h-5 text-secondary" />
@@ -150,7 +153,7 @@ export function PricingSection() {
                   <span className="text-lg text-gray-600 font-normal">/month</span>
                 </div>
                 <p className="text-gray-600">
-                  {plan.name === "Pro" ? "For serious professionals" : "For teams and organizations"}
+                  {plan.name === "Pro" ? "Go Pro for better screen habits" : "For teams and organizations"}
                 </p>
               </CardHeader>
               
@@ -212,7 +215,7 @@ export function PricingSection() {
               </thead>
               <tbody>
                 <tr className="border-b">
-                  <td className="py-4 px-2">Blink tracking</td>
+                  <td className="py-4 px-2">Posture tracking</td>
                   <td className="text-center py-4 px-2">
                     <Check className="w-5 h-5 text-secondary mx-auto" />
                   </td>
@@ -221,7 +224,7 @@ export function PricingSection() {
                   </td>
                 </tr>
                 <tr className="border-b">
-                  <td className="py-4 px-2">Posture monitoring</td>
+                  <td className="py-4 px-2">Movement analysis</td>
                   <td className="text-center py-4 px-2">
                     <Check className="w-5 h-5 text-secondary mx-auto" />
                   </td>
@@ -230,9 +233,40 @@ export function PricingSection() {
                   </td>
                 </tr>
                 <tr className="border-b">
-                  <td className="py-4 px-2">Analytics & insights</td>
-                  <td className="text-center py-4 px-2">14 days</td>
-                  <td className="text-center py-4 px-2">Advanced</td>
+                  <td className="py-4 px-2">Blink detection</td>
+                  <td className="text-center py-4 px-2">
+                    <Check className="w-5 h-5 text-secondary mx-auto" />
+                  </td>
+                  <td className="text-center py-4 px-2">
+                    <Check className="w-5 h-5 text-secondary mx-auto" />
+                  </td>
+                </tr>
+                <tr className="border-b">
+                  <td className="py-4 px-2">Screen distance monitoring</td>
+                  <td className="text-center py-4 px-2">
+                    <Check className="w-5 h-5 text-secondary mx-auto" />
+                  </td>
+                  <td className="text-center py-4 px-2">
+                    <Check className="w-5 h-5 text-secondary mx-auto" />
+                  </td>
+                </tr>
+                <tr className="border-b">
+                  <td className="py-4 px-2">Smart reminders</td>
+                  <td className="text-center py-4 px-2">
+                    <Check className="w-5 h-5 text-secondary mx-auto" />
+                  </td>
+                  <td className="text-center py-4 px-2">
+                    <Check className="w-5 h-5 text-secondary mx-auto" />
+                  </td>
+                </tr>
+                <tr className="border-b">
+                  <td className="py-4 px-2">Focus timer</td>
+                  <td className="text-center py-4 px-2">
+                    <Check className="w-5 h-5 text-secondary mx-auto" />
+                  </td>
+                  <td className="text-center py-4 px-2">
+                    <Check className="w-5 h-5 text-secondary mx-auto" />
+                  </td>
                 </tr>
                 <tr className="border-b">
                   <td className="py-4 px-2">Multi-screen support</td>
@@ -242,6 +276,11 @@ export function PricingSection() {
                   <td className="text-center py-4 px-2">
                     <Check className="w-5 h-5 text-secondary mx-auto" />
                   </td>
+                </tr>
+                <tr className="border-b">
+                  <td className="py-4 px-2">Analytics & insights</td>
+                  <td className="text-center py-4 px-2">7 days</td>
+                  <td className="text-center py-4 px-2">Advanced</td>
                 </tr>
                 <tr>
                   <td className="py-4 px-2">Priority support</td>
