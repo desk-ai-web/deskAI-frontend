@@ -4,6 +4,8 @@ import { Check, Loader2 } from "lucide-react";
 import initialViewImage from "@/assets/initial_view.png";
 import { stripeUtils } from "@/lib/stripe";
 import { useAuth } from "@/hooks/useAuth";
+import hunchIcon from "@/assets/hunch_icon.svg";
+import distanceIcon from "@/assets/distance_icon.svg";
 
 import { getApiUrl } from '@/config';
 
@@ -242,20 +244,26 @@ export function HeroSection() {
           <img 
             src={initialViewImage}
             alt="DeskAI application interface showing blink tracking and posture monitoring" 
-            className="rounded-2xl shadow-2xl max-h-[580px] object-contain mx-auto" 
+            className="rounded-xl shadow-2xl max-h-[580px] object-contain mx-auto" 
           />
           
           {/* Floating UI elements */}
           <div className="absolute -top-4 -right-4 glass rounded-2xl p-4 animate-float" style={{animationDelay: '1s'}}>
-            <div className="w-8 h-8 text-primary mb-2 mx-auto">👁️</div>
-            <p className="text-sm font-semibold">Blink Tracking</p>
-            <p className="text-xs text-gray-600">Active</p>
+            <img
+              src={distanceIcon}
+              alt="Blink tracking illustration"
+              className="w-16 h-16 object-contain mx-auto"
+              draggable={false}
+            />
           </div>
           
           <div className="absolute -bottom-4 -left-4 glass rounded-2xl p-4 animate-float" style={{animationDelay: '2s'}}>
-            <div className="w-8 h-8 text-secondary mb-2 mx-auto">✓</div>
-            <p className="text-sm font-semibold">Posture Check</p>
-            <p className="text-xs text-gray-600">Good</p>
+            <img
+              src={hunchIcon}
+              alt="Posture monitoring illustration"
+              className="w-16 h-16 object-contain mx-auto"
+              draggable={false}
+            />
           </div>
         </div>
       </div>
