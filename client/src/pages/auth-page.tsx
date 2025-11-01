@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -73,6 +73,55 @@ export default function AuthPage() {
     },
   });
 
+  // Try to finalize desktop flow immediately using session (works for Google OAuth)
+  useEffect(() => {
+    async function tryImmediateFinalize() {
+      if (!(fromDesktop && state)) return;
+      const guardKey = `desktop-finalized-${state}`;
+      // If we already finalized (or are in-progress), don't start another
+      if (sessionStorage.getItem(guardKey)) return;
+      try {
+        sessionStorage.setItem(guardKey, 'in-progress');
+        const payload: any = { state };
+        if (redirectUri) payload.redirect_uri = redirectUri;
+        const resp = await apiRequest(
+          'POST',
+          getApiUrl('/api/auth/desktop/callback'),
+          payload
+        );
+        const data = await resp.json();
+        const url = data?.data?.url as string | undefined;
+        const token = data?.data?.token as string | undefined;
+        if (url) {
+          sessionStorage.setItem(guardKey, '1');
+          window.location.href = url;
+          return;
+        }
+        if (!url && token && redirectUri) {
+          const sep = redirectUri.includes('?') ? '&' : '?';
+          sessionStorage.setItem(guardKey, '1');
+          window.location.href = `${redirectUri}${sep}token=${encodeURIComponent(
+            token
+          )}&state=${encodeURIComponent(state)}`;
+          return;
+        }
+        if (import.meta.env.MODE === 'development') {
+          console.warn('Immediate desktop finalize had no URL', data);
+        }
+        sessionStorage.removeItem(guardKey);
+      } catch (e: any) {
+        // If unauthorized, user still needs to sign in (session not present);
+        // remove guard so later flows can retry after login
+        if (import.meta.env.MODE === 'development') {
+          console.warn('Immediate desktop finalize failed', e?.message || e);
+        }
+        sessionStorage.removeItem(guardKey);
+      }
+    }
+    tryImmediateFinalize();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fromDesktop, state, redirectUri]);
+
   const loginMutation = useMutation({
     mutationFn: async (data: LoginData) => {
       const res = await apiRequest('POST', getApiUrl('/api/v2/login'), data);
@@ -94,7 +143,13 @@ export default function AuthPage() {
 
       // If from desktop, request deep link from server and navigate
       if (fromDesktop && state) {
+        const guardKey = `desktop-finalized-${state}`;
+        if (sessionStorage.getItem(guardKey)) {
+          // Already finalized or in-progress
+          return setLocation('/dashboard');
+        }
         try {
+          sessionStorage.setItem(guardKey, 'in-progress');
           const payload: any = { state };
           if (redirectUri) payload.redirect_uri = redirectUri;
           const callbackRes = await apiRequest(
@@ -104,12 +159,30 @@ export default function AuthPage() {
           );
           const data = await callbackRes.json();
           const url = data?.data?.url as string | undefined;
+          const token = data?.data?.token as string | undefined;
           if (url) {
+            sessionStorage.setItem(guardKey, '1');
             window.location.href = url;
             return;
           }
+          // Fallback: construct URL locally if server returned token but no URL
+          if (!url && token && redirectUri) {
+            const sep = redirectUri.includes('?') ? '&' : '?';
+            sessionStorage.setItem(guardKey, '1');
+            window.location.href = `${redirectUri}${sep}token=${encodeURIComponent(
+              token
+            )}&state=${encodeURIComponent(state)}`;
+            return;
+          }
+          if (import.meta.env.MODE === 'development') {
+            console.warn('Desktop callback did not return URL', data);
+          }
         } catch (e) {
+          if (import.meta.env.MODE === 'development') {
+            console.error('Desktop callback error (login flow):', e);
+          }
           // fallback to normal
+          sessionStorage.removeItem(guardKey);
         }
       }
       {
@@ -171,7 +244,12 @@ export default function AuthPage() {
 
       // If from desktop, request deep link from server and navigate
       if (fromDesktop && state) {
+        const guardKey = `desktop-finalized-${state}`;
+        if (sessionStorage.getItem(guardKey)) {
+          return setLocation('/dashboard');
+        }
         try {
+          sessionStorage.setItem(guardKey, 'in-progress');
           const payload: any = { state };
           if (redirectUri) payload.redirect_uri = redirectUri;
           const callbackRes = await apiRequest(
@@ -181,12 +259,33 @@ export default function AuthPage() {
           );
           const data = await callbackRes.json();
           const url = data?.data?.url as string | undefined;
+          const token = data?.data?.token as string | undefined;
           if (url) {
+            sessionStorage.setItem(guardKey, '1');
             window.location.href = url;
             return;
           }
+          // Fallback: construct URL locally if server returned token but no URL
+          if (!url && token && redirectUri) {
+            const sep = redirectUri.includes('?') ? '&' : '?';
+            sessionStorage.setItem(guardKey, '1');
+            window.location.href = `${redirectUri}${sep}token=${encodeURIComponent(
+              token
+            )}&state=${encodeURIComponent(state)}`;
+            return;
+          }
+          if (import.meta.env.MODE === 'development') {
+            console.warn(
+              'Desktop callback did not return URL (register)',
+              data
+            );
+          }
         } catch (e) {
+          if (import.meta.env.MODE === 'development') {
+            console.error('Desktop callback error (register flow):', e);
+          }
           // fallback to normal
+          sessionStorage.removeItem(guardKey);
         }
       }
       {
@@ -213,6 +312,58 @@ export default function AuthPage() {
     },
   });
 
+  // If already authenticated and this is a desktop flow, finalize by requesting desktop token
+  useEffect(() => {
+    async function finalizeDesktopIfNeeded() {
+      if (fromDesktop && state && user) {
+        const guardKey = `desktop-finalized-${state}`;
+        if (sessionStorage.getItem(guardKey)) {
+          return setLocation('/dashboard');
+        }
+        try {
+          sessionStorage.setItem(guardKey, 'in-progress');
+          const payload: any = { state };
+          if (redirectUri) payload.redirect_uri = redirectUri;
+          const callbackRes = await apiRequest(
+            'POST',
+            getApiUrl('/api/auth/desktop/callback'),
+            payload
+          );
+          const data = await callbackRes.json();
+          const url = data?.data?.url as string | undefined;
+          const token = data?.data?.token as string | undefined;
+          if (url) {
+            sessionStorage.setItem(guardKey, '1');
+            window.location.href = url;
+            return;
+          }
+          if (!url && token && redirectUri) {
+            const sep = redirectUri.includes('?') ? '&' : '?';
+            sessionStorage.setItem(guardKey, '1');
+            window.location.href = `${redirectUri}${sep}token=${encodeURIComponent(
+              token
+            )}&state=${encodeURIComponent(state)}`;
+            return;
+          }
+          if (import.meta.env.MODE === 'development') {
+            console.warn(
+              'Desktop callback did not return URL (already signed-in)',
+              data
+            );
+          }
+        } catch (e) {
+          if (import.meta.env.MODE === 'development') {
+            console.error('Desktop callback error (already signed-in):', e);
+          }
+          // fall through to normal navigation
+          sessionStorage.removeItem(guardKey);
+        }
+        setLocation('/dashboard');
+      }
+    }
+    finalizeDesktopIfNeeded();
+  }, [fromDesktop, state, redirectUri, user, setLocation]);
+
   const onLoginSubmit = (data: LoginData) => {
     loginMutation.mutate(data);
   };
@@ -222,7 +373,8 @@ export default function AuthPage() {
   };
 
   // Redirect if already authenticated (after all hooks are called)
-  if (!isLoading && user) {
+  // For desktop flow, avoid short-circuiting so useEffect above can finalize
+  if (!isLoading && user && !fromDesktop) {
     return <Redirect to="/" />;
   }
 

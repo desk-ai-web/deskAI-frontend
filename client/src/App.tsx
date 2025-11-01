@@ -1,24 +1,24 @@
-import { Switch, Route } from "wouter";
-import { queryClient } from "./lib/queryClient";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { ThemeProvider } from "@/hooks/useTheme";
-import { useAuth } from "@/hooks/useAuth";
-import NotFound from "@/pages/not-found";
-import Landing from "@/pages/landing";
-import Dashboard from "@/pages/dashboard";
-import Downloads from "@/pages/downloads";
-import AuthPage from "@/pages/auth-page";
-import TermsPage from "@/pages/terms";
-import PrivacyPage from "@/pages/privacy";
+import { Switch, Route } from 'wouter';
+import { queryClient } from './lib/queryClient';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from '@/components/ui/toaster';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { ThemeProvider } from '@/hooks/useTheme';
+import { useAuth } from '@/hooks/useAuth';
+// Desktop finalization is handled in AuthPage to avoid duplicate calls
+import NotFound from '@/pages/not-found';
+import Landing from '@/pages/landing';
+import Dashboard from '@/pages/dashboard';
+import Downloads from '@/pages/downloads';
+import AuthPage from '@/pages/auth-page';
+import TermsPage from '@/pages/terms';
+import PrivacyPage from '@/pages/privacy';
 
 function Router() {
   // Note: isAuthenticated and isLoading are available for future use
-  const { isAuthenticated: _isAuthenticated, isLoading: _isLoading } = useAuth();
-  
-  // TODO: Use these variables for conditional rendering or authentication checks
-  // For now, they're prefixed with _ to indicate they're intentionally unused
+  const { isAuthenticated: _isAuthenticated, isLoading: _isLoading } =
+    useAuth();
+  // Desktop flow finalization is handled exclusively in AuthPage now
 
   return (
     <Switch>
