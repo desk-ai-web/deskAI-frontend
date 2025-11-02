@@ -774,11 +774,11 @@ export default function AuthPage() {
         <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary to-blue-600 dark:from-gray-800 dark:to-gray-900 items-center justify-center p-8 text-white">
           <div className="max-w-md text-center">
             <div className="relative mb-8">
-              <div className="w-32 h-32 mx-auto bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+              <div className="relative w-32 h-32 mx-auto flex items-center justify-center">
                 <img
                   src={heroIcon}
                   alt="Person working at a computer"
-                  className="w-16 h-16 object-contain"
+                  className="w-32 h-32 object-contain"
                   draggable={false}
                 />
 

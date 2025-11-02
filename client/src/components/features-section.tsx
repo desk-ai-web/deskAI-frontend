@@ -103,7 +103,7 @@ export function FeaturesSection() {
 
         {/* Posture Section */}
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <div className="relative order-2 lg:order-1 mt-24">
+            <div className="relative order-2 lg:order-1 mt-24 flex justify-center">
             {/* Tailored posture and movement tracking video */}
             <video
               className="rounded-2xl hover-lift w-full max-h-[500px] object-contain"
@@ -240,11 +240,11 @@ export function FeaturesSection() {
                 </CardContent>
               </Card>
             </div>
-
-            <div className="relative">
+            
+            <div className="relative flex justify-center">
               {/* Focus and productivity video */}
               <video
-                className="rounded-2xl shadow-2xl hover-lift w-full"
+                className="rounded-2xl shadow-2xl hover-lift w-full max-h-[520px] object-cover"
                 autoPlay
                 muted
                 loop
@@ -255,8 +255,7 @@ export function FeaturesSection() {
                 Focus timer demo.
               </video>
 
-              {/* Timer UI overlay */}
-              <div className="absolute top-8 left-8 glass rounded-2xl p-6 max-w-xs">
+              <div className="absolute -bottom-4 -left-4 glass rounded-2xl p-4 max-w-xs animate-float" style={{animationDelay: '1s'}}>
                 <div className="text-center">
                   <div className="text-3xl font-bold gradient-text mb-2">
                     25:00
