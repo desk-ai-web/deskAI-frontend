@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { ThemeProvider } from '@/hooks/useTheme';
 import { useAuth } from '@/hooks/useAuth';
+import { CookieConsent } from '@/components/cookie-consent';
 // Desktop finalization is handled in AuthPage to avoid duplicate calls
 import NotFound from '@/pages/not-found';
 import Landing from '@/pages/landing';
@@ -43,6 +44,7 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <Router />
+          <CookieConsent />
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>

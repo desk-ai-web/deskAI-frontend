@@ -1,8 +1,11 @@
 import { SiX, SiGithub, SiLinkedin } from 'react-icons/si';
 import { Link } from 'wouter';
 import logoIcon from '@/assets/icon_with_background.png';
+import { useCookieConsent } from '@/hooks/useCookieConsent';
 
 export function Footer() {
+  const { resetConsent } = useCookieConsent();
+  
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -134,6 +137,14 @@ export function Footer() {
                 >
                   Impressum
                 </Link>
+              </li>
+              <li>
+                <button
+                  onClick={resetConsent}
+                  className="hover:text-primary transition-colors"
+                >
+                  Cookie Settings
+                </button>
               </li>
             </ul>
           </div>

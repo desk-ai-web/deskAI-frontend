@@ -56,7 +56,9 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
   }
 
   /* Smooth transitions for theme changes */
@@ -85,32 +87,44 @@
     background: rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
-  
+
   .gradient-bg {
-    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+    background: linear-gradient(
+      135deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--secondary)) 100%
+    );
     transition: all 0.3s ease;
   }
-  
+
   .gradient-text {
-    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+    background: linear-gradient(
+      135deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--secondary)) 100%
+    );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     transition: all 0.3s ease;
   }
-  
+
   .hover-lift {
     transition: all 0.3s ease;
   }
-  
+
   .hover-lift:hover {
     transform: translateY(-5px);
   }
-  
+
   .animate-float {
     animation: float 6s ease-in-out infinite;
   }
-  
+
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
   .blur-effect {
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
@@ -155,8 +169,6 @@
     @apply text-gray-400;
   }
 
-
-
   /* Dark mode background utilities */
   .dark .bg-white {
     @apply bg-gray-900;
@@ -198,7 +210,12 @@
   }
 
   .dark .bg-gradient-to-br.from-gray-50.via-white.to-gray-100 {
-    background: linear-gradient(to bottom right, rgb(17, 24, 39), rgb(31, 41, 55), rgb(17, 24, 39));
+    background: linear-gradient(
+      to bottom right,
+      rgb(17, 24, 39),
+      rgb(31, 41, 55),
+      rgb(17, 24, 39)
+    );
   }
 
   /* Dark mode form styling */
@@ -208,16 +225,18 @@
 
   /* Dark mode card styling */
   .dark .shadow-xl {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+    box-shadow:
+      0 20px 25px -5px rgba(0, 0, 0, 0.3),
+      0 10px 10px -5px rgba(0, 0, 0, 0.2);
   }
 
   /* Dark mode tab styling */
-  .dark [data-state="active"] {
+  .dark [data-state='active'] {
     /* background-color: rgb(59, 130, 246); */
     color: white;
   }
 
-  .dark [data-state="inactive"] {
+  .dark [data-state='inactive'] {
     background-color: rgb(75, 85, 99);
     color: rgb(229, 231, 235);
   }
@@ -240,7 +259,11 @@
   }
 
   .dark .bg-gradient-to-br.from-primary\/20.to-secondary\/20 {
-    background: linear-gradient(to bottom right, rgba(59, 130, 246, 0.3), rgba(0, 200, 150, 0.3));
+    background: linear-gradient(
+      to bottom right,
+      rgba(59, 130, 246, 0.3),
+      rgba(0, 200, 150, 0.3)
+    );
   }
 
   /* Dark mode card hover effects */
@@ -258,7 +281,11 @@
 
   /* Auth page right side dark mode styling */
   .dark .bg-gradient-to-br.from-primary.to-blue-600 {
-    background: linear-gradient(to bottom right, rgb(31, 41, 55), rgb(17, 24, 39));
+    background: linear-gradient(
+      to bottom right,
+      rgb(31, 41, 55),
+      rgb(17, 24, 39)
+    );
   }
 
   /* Smooth transitions for auth page */
@@ -268,11 +295,23 @@
 }
 
 @keyframes float {
-  0%, 100% { 
-    transform: translateY(0px); 
+  0%,
+  100% {
+    transform: translateY(0px);
   }
-  50% { 
-    transform: translateY(-20px); 
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 
