@@ -103,7 +103,7 @@ export function FeaturesSection() {
 
         {/* Posture Section */}
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="relative order-2 lg:order-1 mt-24 flex justify-center">
+          <div className="relative order-2 lg:order-1 mt-10 flex justify-center">
             {/* Tailored posture and movement tracking video */}
             <video
               className="rounded-2xl hover-lift w-full max-h-[500px] object-contain"
@@ -116,6 +116,24 @@ export function FeaturesSection() {
               <source src={blinkDetectionVideo} type="video/webm" />
               Blink detection demo video.
             </video>
+
+            {/* Floating annotation box explaining blink detection - positioned at bottom right */}
+            <div
+              className="absolute -bottom-4 -right-4 glass rounded-xl p-3 max-w-[180px] animate-float shadow-lg"
+              style={{ animationDelay: '1.5s' }}
+            >
+              <div className="flex items-start space-x-2">
+                <Eye className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-xs font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                    Blink Detection
+                  </p>
+                  <p className="text-xs text-gray-600 dark:text-gray-300 leading-tight">
+                    Red overlay indicates detected blinks
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="space-y-8 order-1 lg:order-2">
@@ -240,7 +258,7 @@ export function FeaturesSection() {
                 </CardContent>
               </Card>
             </div>
-            
+
             <div className="relative flex justify-center">
               {/* Focus and productivity video */}
               <video
@@ -255,7 +273,7 @@ export function FeaturesSection() {
                 Focus timer demo.
               </video>
 
-              <div className="absolute -bottom-4 -left-4 glass rounded-2xl p-4 max-w-xs animate-float" style={{animationDelay: '1s'}}>
+              {/* <div className="absolute -bottom-4 -left-4 glass rounded-2xl p-4 max-w-xs animate-float" style={{animationDelay: '1s'}}>
                 <div className="text-center">
                   <div className="text-3xl font-bold gradient-text mb-2">
                     25:00
@@ -270,7 +288,7 @@ export function FeaturesSection() {
                     <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
