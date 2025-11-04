@@ -13,6 +13,7 @@ import Downloads from '@/pages/downloads';
 import AuthPage from '@/pages/auth-page';
 import TermsPage from '@/pages/terms';
 import PrivacyPage from '@/pages/privacy';
+import ImpressumPage from '@/pages/impressum';
 
 function Router() {
   // Note: isAuthenticated and isLoading are available for future use
@@ -29,6 +30,7 @@ function Router() {
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/terms" component={TermsPage} />
       <Route path="/privacy" component={PrivacyPage} />
+      <Route path="/impressum" component={ImpressumPage} />
       <Route component={NotFound} />
     </Switch>
   );

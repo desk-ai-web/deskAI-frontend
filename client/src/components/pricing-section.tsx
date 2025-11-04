@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Check, Loader2 } from "lucide-react";
-import { stripeUtils } from "@/lib/stripe";
-import { useAuth } from "@/hooks/useAuth";
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Check, Loader2 } from 'lucide-react';
+import { stripeUtils } from '@/lib/stripe';
+import { useAuth } from '@/hooks/useAuth';
 
 interface SubscriptionPlan {
   id: string;
@@ -70,26 +70,34 @@ export function PricingSection() {
   };
 
   const handleTeamPlan = () => {
-    window.open('mailto:contact@desk-ai.app?subject=Team Plan Inquiry', '_blank');
+    window.open(
+      'mailto:contact@desk-ai.app?subject=Team Plan Inquiry',
+      '_blank'
+    );
   };
 
   // Use API plans only - no fallback to avoid UUID issues
   const displayPlans = Array.isArray(plans) ? plans : [];
-  
+
   // Get the Pro plan ID for the hero section
-  const _proPlanId = displayPlans.find(plan => plan.name === "Pro")?.id;
+  const _proPlanId = displayPlans.find(plan => plan.name === 'Pro')?.id;
   // TODO: Use _proPlanId for hero section integration or remove if not needed
 
   return (
-    <section id="pricing" className="py-20 bg-gradient-to-br from-light to-white">
+    <section
+      id="pricing"
+      className="py-20 bg-gradient-to-br from-light to-white"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl lg:text-5xl font-bold mb-6">
             Start with a <span className="gradient-text">free trial</span>
           </h2>
-          <p className="text-xl text-gray-600">Try all features free for 7 days, then choose your plan</p>
+          <p className="text-xl text-gray-600">
+            Try all features free for 7 days, then choose your plan
+          </p>
         </div>
-        
+
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {/* Free Trial Plan */}
           <Card className="glass border-0 hover-lift relative">
@@ -97,23 +105,27 @@ export function PricingSection() {
               <CardTitle className="text-2xl font-bold">Free Trial</CardTitle>
               <div className="text-4xl font-bold">
                 €0
-                <span className="text-lg text-gray-600 font-normal">/month</span>
+                <span className="text-lg text-gray-600 font-normal">
+                  /month
+                </span>
               </div>
-              <p className="text-gray-600">7-day free trial, no credit card required</p>
+              <p className="text-gray-600">
+                7-day free trial, no credit card required
+              </p>
             </CardHeader>
-            
+
             <CardContent>
               <ul className="space-y-4 mb-8">
                 {[
-                  "Full feature access for 7 days",
-                  "Posture tracking",
-                  "Movement analysis",
-                  "Blink detection", 
-                  "Screen distance monitoring",
-                  "Smart reminders",
-                  "Integrated focus timer",
-                  "Progress analytics",
-                  "Basic support"
+                  'Full feature access for 7 days',
+                  'Posture tracking',
+                  'Movement analysis',
+                  'Blink detection',
+                  'Screen distance monitoring',
+                  'Smart reminders',
+                  'Integrated focus timer',
+                  'Progress analytics',
+                  'Basic support',
                 ].map((feature, index) => (
                   <li key={index} className="flex items-center space-x-3">
                     <Check className="w-5 h-5 text-secondary" />
@@ -121,11 +133,11 @@ export function PricingSection() {
                   </li>
                 ))}
               </ul>
-              
+
               <Button
                 className="w-full py-3 border-2 border-primary text-primary hover:bg-primary hover:text-white"
                 variant="outline"
-                onClick={() => window.location.href = '/auth'}
+                onClick={() => (window.location.href = '/auth')}
               >
                 Start Free Trial
               </Button>
@@ -133,62 +145,76 @@ export function PricingSection() {
           </Card>
 
           {/* Pro Plan */}
-          {displayPlans.length > 0 ? displayPlans.map((plan) => (
-            <Card 
-              key={plan.id}
-              className={`glass border-0 hover-lift relative ${
-                plan.name === "Pro" ? 'ring-2 ring-primary' : ''
-              }`}
-            >
-              {plan.name === "Pro" && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <Badge className="gradient-bg">Most Popular</Badge>
-                </div>
-              )}
-              
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
-                <div className="text-4xl font-bold">
-                  €{(plan.price / 100).toFixed(2)}
-                  <span className="text-lg text-gray-600 font-normal">/month</span>
-                </div>
-                <p className="text-gray-600">
-                  {plan.name === "Pro" ? "Go Pro for better screen habits" : "For teams and organizations"}
-                </p>
-              </CardHeader>
-              
-              <CardContent>
-                <ul className="space-y-4 mb-8">
-                  {plan.features.map((feature, index) => (
-                    <li key={index} className="flex items-center space-x-3">
-                      <Check className="w-5 h-5 text-secondary" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                
-                <Button
-                  className={`w-full py-3 ${
-                    plan.name === "Pro"
-                      ? 'gradient-bg hover:opacity-90' 
-                      : 'border-2 border-primary text-primary hover:bg-primary hover:text-white'
-                  }`}
-                  variant={plan.name === "Pro" ? "default" : "outline"}
-                  onClick={() => plan.name === "Team" ? handleTeamPlan() : handlePlanSelect(plan.id)}
-                  disabled={loading && selectedPlan === plan.id}
-                >
-                  {loading && selectedPlan === plan.id ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    plan.name === "Team" ? "Contact Sales" : "Start 14-Day Trial"
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
-          )) : (
+          {displayPlans.length > 0 ? (
+            displayPlans.map(plan => (
+              <Card
+                key={plan.id}
+                className={`glass border-0 hover-lift relative ${
+                  plan.name === 'Pro' ? 'ring-2 ring-primary' : ''
+                }`}
+              >
+                {plan.name === 'Pro' && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <Badge className="gradient-bg">Most Popular</Badge>
+                  </div>
+                )}
+
+                <CardHeader>
+                  <CardTitle className="text-2xl font-bold">
+                    {plan.name}
+                  </CardTitle>
+                  <div className="text-4xl font-bold">
+                    €{(plan.price / 100).toFixed(2)}
+                    <span className="text-lg text-gray-600 font-normal">
+                      /month
+                    </span>
+                  </div>
+                  <p className="text-gray-600">
+                    {plan.name === 'Pro'
+                      ? 'Go Pro for better screen habits'
+                      : 'For teams and organizations'}
+                  </p>
+                </CardHeader>
+
+                <CardContent>
+                  <ul className="space-y-4 mb-8">
+                    {plan.features.map((feature, index) => (
+                      <li key={index} className="flex items-center space-x-3">
+                        <Check className="w-5 h-5 text-secondary" />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Button
+                    className={`w-full py-3 ${
+                      plan.name === 'Pro'
+                        ? 'gradient-bg hover:opacity-90'
+                        : 'border-2 border-primary text-primary hover:bg-primary hover:text-white'
+                    }`}
+                    variant={plan.name === 'Pro' ? 'default' : 'outline'}
+                    onClick={() =>
+                      plan.name === 'Team'
+                        ? handleTeamPlan()
+                        : handlePlanSelect(plan.id)
+                    }
+                    disabled={loading && selectedPlan === plan.id}
+                  >
+                    {loading && selectedPlan === plan.id ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Processing...
+                      </>
+                    ) : plan.name === 'Team' ? (
+                      'Contact Sales'
+                    ) : (
+                      'Start 14-Day Trial'
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+            ))
+          ) : (
             <Card className="glass border-0 hover-lift relative">
               <CardContent className="flex items-center justify-center py-8">
                 <div className="text-center">
@@ -201,7 +227,7 @@ export function PricingSection() {
         </div>
 
         {/* Feature Comparison */}
-        <div className="mt-16 bg-white rounded-2xl p-8 shadow-lg">
+        {/* <div className="mt-16 bg-white rounded-2xl p-8 shadow-lg">
           <h3 className="text-2xl font-bold text-center mb-8">Feature Comparison</h3>
           
           <div className="overflow-x-auto">
@@ -292,7 +318,7 @@ export function PricingSection() {
               </tbody>
             </table>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );

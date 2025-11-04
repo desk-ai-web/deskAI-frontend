@@ -127,6 +127,14 @@ export function Footer() {
                   Terms
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/impressum"
+                  className="hover:text-primary transition-colors"
+                >
+                  Impressum
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

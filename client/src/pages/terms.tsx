@@ -23,14 +23,14 @@ export default function TermsPage() {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">1. Acceptance of Terms</h2>
             <p className="text-gray-700 leading-relaxed">
-              By accessing and using deskAI ("the Service"), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
+              By accessing and using desk.ai ("the Service"), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
             </p>
           </section>
 
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">2. Description of Service</h2>
             <p className="text-gray-700 leading-relaxed mb-4">
-              deskAI is a screen habit tracking application designed to help users monitor and improve their digital wellness. The service includes:
+              desk.ai is a screen habit tracking application designed to help users monitor and improve their digital wellness. The service includes:
             </p>
             <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
               <li>Screen time tracking and analytics</li>
@@ -39,6 +39,9 @@ export default function TermsPage() {
               <li>Data visualization and reports</li>
               <li>Cross-platform synchronization</li>
             </ul>
+            <p className="text-gray-700 leading-relaxed mt-4">
+              The Service is operated by: Guenther & Schwarz GbR, trading as desk.ai ("we", "us", or "our").
+            </p>
           </section>
 
           <section>
@@ -57,7 +60,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">4. Subscription and Payment</h2>
             <p className="text-gray-700 leading-relaxed mb-4">
-              deskAI offers both free and premium subscription plans:
+              desk.ai offers both free and premium subscription plans:
             </p>
             <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
               <li><strong>Free Trial:</strong> 14-day free trial period</li>
@@ -95,14 +98,14 @@ export default function TermsPage() {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">7. Intellectual Property</h2>
             <p className="text-gray-700 leading-relaxed">
-              The Service and its original content, features, and functionality are owned by deskAI and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.
+              The Service and its original content, features, and functionality are owned by desk.ai and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.
             </p>
           </section>
 
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">8. Limitation of Liability</h2>
             <p className="text-gray-700 leading-relaxed">
-              In no event shall deskAI, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your use of the Service.
+              In no event shall desk.ai, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your use of the Service.
             </p>
           </section>
 
@@ -126,7 +129,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">11. Governing Law</h2>
             <p className="text-gray-700 leading-relaxed">
-              These Terms shall be interpreted and governed by the laws of the European Union, without regard to its conflict of law provisions. Our failure to enforce any right or provision of these Terms will not be considered a waiver of those rights.
+              These Terms shall be interpreted and governed by the laws of the Federal Republic of Germany, without regard to its conflict of law provisions. Our failure to enforce any right or provision of these Terms will not be considered a waiver of those rights.
             </p>
           </section>
 
@@ -137,9 +140,10 @@ export default function TermsPage() {
             </p>
             <div className="mt-4 p-4 bg-gray-50 rounded-lg">
               <p className="text-gray-700">
+                desk.ai (operated by Guenther & Schwarz GbR)<br />
+                <strong>Address:</strong> Allacher Str. 118a, 80997, München<br />
                 <strong>Email:</strong> contact@desk-ai.app<br />
-                <strong>Website:</strong> https://desk-ai.app<br />
-                <strong>Address:</strong> Munich, Germany
+                <strong>Website:</strong> https://desk-ai.app
               </p>
             </div>
           </section>

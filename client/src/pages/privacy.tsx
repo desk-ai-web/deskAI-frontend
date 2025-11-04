@@ -23,7 +23,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">1. Introduction</h2>
             <p className="text-gray-700 leading-relaxed">
-              At deskAI ("we," "our," or "us"), we are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our screen habit tracking application.
+              At desk.ai, operated by Guenther & Schwarz GbR ("we," "our," or "us"), we are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our screen habit tracking application.
             </p>
           </section>
 
@@ -176,19 +176,26 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">12. Contact Us</h2>
             <p className="text-gray-700 leading-relaxed mb-4">
-              If you have any questions about this Privacy Policy or our data practices, please contact us:
+              If you have any questions about this Privacy Policy or our data practices, please contact:
             </p>
             <div className="mt-4 p-4 bg-gray-50 rounded-lg">
               <p className="text-gray-700">
+                desk.ai (operated by Guenther & Schwarz GbR)<br />
+                <strong>Address:</strong> Allacher Str. 118a, 80997, München<br />
                 <strong>Email:</strong> contact@desk-ai.app<br />
-                <strong>Website:</strong> https://desk-ai.app<br />
-                <strong>Data Protection Officer:</strong> contact@desk-ai.app<br />
-                <strong>Address:</strong> Munich, Germany
+                <strong>Website:</strong> https://desk-ai.app
               </p>
             </div>
             <p className="text-gray-700 leading-relaxed mt-4">
-              For EU residents, you also have the right to lodge a complaint with your local data protection authority if you believe we have not addressed your concerns adequately.
+              For EU residents, you also have the right to lodge a complaint with your local data protection authority or with:
             </p>
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <p className="text-gray-700">
+                Bayerisches Landesamt für Datenschutzaufsicht (BayLDA)<br />
+                Promenade 18, 91522 Ansbach, Germany<br />
+                <strong>Website:</strong> https://www.lda.bayern.de
+              </p>
+            </div>
           </section>
         </div>
       </div>
