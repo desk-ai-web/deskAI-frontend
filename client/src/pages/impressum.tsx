@@ -15,7 +15,7 @@ export default function ImpressumPage() {
             </Button>
           </Link>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Impressum</h1>
-          <p className="text-gray-600">Last updated: January 2025</p>
+          <p className="text-gray-600">Last updated: November 2025</p>
         </div>
 
         {/* Content */}

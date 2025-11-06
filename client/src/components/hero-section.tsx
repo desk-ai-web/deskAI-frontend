@@ -127,7 +127,7 @@ export function HeroSection() {
         text: 'Start Free Trial',
         onClick: handleStartTrial,
         loading: loading,
-        disabled: loading || !proPlanId,
+        disabled: loading, // Don't wait for proPlanId - we redirect to auth anyway
       };
     }
 

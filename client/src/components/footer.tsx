@@ -5,7 +5,7 @@ import { useCookieConsent } from '@/hooks/useCookieConsent';
 
 export function Footer() {
   const { resetConsent } = useCookieConsent();
-  
+
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -99,6 +99,14 @@ export function Footer() {
                 >
                   FAQ
                 </button>
+              </li>
+              <li>
+                <Link
+                  href="/resources"
+                  className="hover:text-primary transition-colors"
+                >
+                  Resources
+                </Link>
               </li>
               <li>
                 <a

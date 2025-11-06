@@ -14,7 +14,7 @@ export function useCookieConsent() {
   const [consentStatus, setConsentStatus] = useState<CookieConsentStatus>(null);
   const [isVisible, setIsVisible] = useState(false);
 
-  useEffect(() => {
+  const checkConsent = () => {
     // Check for existing consent
     const stored = localStorage.getItem(COOKIE_CONSENT_KEY);
     
@@ -41,6 +41,21 @@ export function useCookieConsent() {
       // No consent stored, show banner
       setIsVisible(true);
     }
+  };
+
+  useEffect(() => {
+    checkConsent();
+    
+    // Listen for reset events from other components
+    const handleReset = () => {
+      checkConsent();
+    };
+    
+    window.addEventListener('cookieConsentReset', handleReset);
+    
+    return () => {
+      window.removeEventListener('cookieConsentReset', handleReset);
+    };
   }, []);
 
   const acceptAll = () => {
@@ -67,6 +82,8 @@ export function useCookieConsent() {
     localStorage.removeItem(COOKIE_CONSENT_KEY);
     setConsentStatus(null);
     setIsVisible(true);
+    // Dispatch custom event to notify other instances
+    window.dispatchEvent(new CustomEvent('cookieConsentReset'));
   };
 
   const hasAnalyticsConsent = () => {
