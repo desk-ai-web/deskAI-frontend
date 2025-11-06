@@ -18,26 +18,27 @@ import { Navigation } from "@/components/navigation";
 import { useLogout } from "@/lib/authUtils";
 
 export default function Dashboard() {
+  // CRITICAL: Capture JWT token BEFORE any hooks run to avoid race condition
+  // This must be synchronous and happen before useAuth() is called
+  const urlParams = new URLSearchParams(window.location.search);
+  const tokenFromUrl = urlParams.get('token');
+  
+  if (tokenFromUrl && typeof window !== 'undefined') {
+    // Store token immediately if present
+    localStorage.setItem('deskai_jwt', tokenFromUrl);
+    // Clean URL without page reload
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
   const { toast } = useToast();
   const { isAuthenticated, isLoading, user } = useAuth();
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
 
-  // Capture JWT token from URL (Google OAuth callback)
+  // Refetch user data if we just captured a token
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
-    
-    if (token) {
-      // Store JWT token in localStorage
-      localStorage.setItem('deskai_jwt', token);
-      
-      // Remove token from URL for security (without page reload)
-      const newUrl = window.location.pathname;
-      window.history.replaceState({}, document.title, newUrl);
-      
-      // Immediately refetch user data with the new token
-      // This ensures instant authentication without waiting for session cookies
+    if (tokenFromUrl) {
+      // Force immediate refetch with the newly stored token
       queryClient.invalidateQueries({
         queryKey: [getApiUrl('/api/v2/user/data')],
       });
@@ -45,7 +46,7 @@ export default function Dashboard() {
         queryKey: [getApiUrl('/api/v2/user/data')],
       });
     }
-  }, [queryClient]);
+  }, [tokenFromUrl, queryClient]);
   const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   

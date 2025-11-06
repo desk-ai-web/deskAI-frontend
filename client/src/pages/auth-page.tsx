@@ -41,6 +41,15 @@ type LoginData = z.infer<typeof loginSchema>;
 type RegisterData = z.infer<typeof registerSchema>;
 
 export default function AuthPage() {
+  // CRITICAL: Capture JWT token BEFORE any hooks run to avoid race condition
+  const urlParams = new URLSearchParams(window.location.search);
+  const tokenFromUrl = urlParams.get('token');
+
+  if (tokenFromUrl && typeof window !== 'undefined') {
+    // Store token immediately if present (before useAuth is called)
+    localStorage.setItem('deskai_jwt', tokenFromUrl);
+  }
+
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState('login');
   const queryClient = useQueryClient();
@@ -48,22 +57,17 @@ export default function AuthPage() {
   const [, setLocation] = useLocation();
 
   // Check for OAuth errors in URL
-  const urlParams = new URLSearchParams(window.location.search);
   const oauthError = urlParams.get('error');
-  const tokenFromUrl = urlParams.get('token');
 
   // Check if this is a desktop authentication request
   const fromDesktop = urlParams.get('from') === 'desktop';
   const state = urlParams.get('state');
   const redirectUri = urlParams.get('redirect_uri');
 
-  // Capture JWT token from URL if present (from Google OAuth)
+  // Refetch user data if we just captured a token
   useEffect(() => {
     if (tokenFromUrl) {
-      localStorage.setItem('deskai_jwt', tokenFromUrl);
-      
-      // Immediately refetch user data with the new token
-      // This bypasses session cookie timing issues
+      // Force immediate refetch with the newly stored token
       queryClient.invalidateQueries({
         queryKey: [getApiUrl('/api/v2/user/data')],
       });
@@ -815,13 +819,16 @@ export default function AuthPage() {
               Monitor Your Screen Habits
             </h2>
             <p className="text-lg text-white/90 mb-6">
-              Track posture, movement, eye-blinks and screen distance with AI-powered
-              monitoring. Improve your screen habits while staying productive.
+              Track posture, movement, eye-blinks and screen distance with
+              AI-powered monitoring. Improve your screen habits while staying
+              productive.
             </p>
 
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="bg-white/10 dark:bg-gray-700/30 rounded-lg p-3 backdrop-blur-sm">
-                <div className="text-green-400 font-semibold">Screen Habit Tracking</div>
+                <div className="text-green-400 font-semibold">
+                  Screen Habit Tracking
+                </div>
                 <div className="text-white/80 dark:text-gray-200">
                   Automatic AI-based detection
                 </div>
