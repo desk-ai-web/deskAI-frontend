@@ -4,7 +4,6 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { ThemeProvider } from '@/hooks/useTheme';
-import { useAuth } from '@/hooks/useAuth';
 import { CookieConsent } from '@/components/cookie-consent';
 // Desktop finalization is handled in AuthPage to avoid duplicate calls
 import NotFound from '@/pages/not-found';
@@ -18,10 +17,8 @@ import ImpressumPage from '@/pages/impressum';
 import ResourcesPage from '@/pages/resources';
 
 function Router() {
-  // Note: isAuthenticated and isLoading are available for future use
-  const { isAuthenticated: _isAuthenticated, isLoading: _isLoading } =
-    useAuth();
-  // Desktop flow finalization is handled exclusively in AuthPage now
+  // Auth state is handled in individual page components to avoid unnecessary API calls
+  // Desktop flow finalization is handled exclusively in AuthPage
 
   return (
     <Switch>

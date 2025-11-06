@@ -50,11 +50,28 @@ export default function AuthPage() {
   // Check for OAuth errors in URL
   const urlParams = new URLSearchParams(window.location.search);
   const oauthError = urlParams.get('error');
+  const tokenFromUrl = urlParams.get('token');
 
   // Check if this is a desktop authentication request
   const fromDesktop = urlParams.get('from') === 'desktop';
   const state = urlParams.get('state');
   const redirectUri = urlParams.get('redirect_uri');
+
+  // Capture JWT token from URL if present (from Google OAuth)
+  useEffect(() => {
+    if (tokenFromUrl) {
+      localStorage.setItem('deskai_jwt', tokenFromUrl);
+      
+      // Immediately refetch user data with the new token
+      // This bypasses session cookie timing issues
+      queryClient.invalidateQueries({
+        queryKey: [getApiUrl('/api/v2/user/data')],
+      });
+      queryClient.refetchQueries({
+        queryKey: [getApiUrl('/api/v2/user/data')],
+      });
+    }
+  }, [tokenFromUrl, queryClient]);
 
   const loginForm = useForm<LoginData>({
     resolver: zodResolver(loginSchema),

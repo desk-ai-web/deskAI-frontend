@@ -22,6 +22,30 @@ export default function Dashboard() {
   const { isAuthenticated, isLoading, user } = useAuth();
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
+
+  // Capture JWT token from URL (Google OAuth callback)
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    
+    if (token) {
+      // Store JWT token in localStorage
+      localStorage.setItem('deskai_jwt', token);
+      
+      // Remove token from URL for security (without page reload)
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+      
+      // Immediately refetch user data with the new token
+      // This ensures instant authentication without waiting for session cookies
+      queryClient.invalidateQueries({
+        queryKey: [getApiUrl('/api/v2/user/data')],
+      });
+      queryClient.refetchQueries({
+        queryKey: [getApiUrl('/api/v2/user/data')],
+      });
+    }
+  }, [queryClient]);
   const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   
