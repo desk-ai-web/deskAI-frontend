@@ -24,7 +24,7 @@ A modern desktop application that tracks user health metrics, provides focus ses
 
 ## 📋 Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - PostgreSQL 14+
 - npm or yarn
 - Git
@@ -32,23 +32,27 @@ A modern desktop application that tracks user health metrics, provides focus ses
 ## 🛠️ Installation
 
 ### 1. Clone the repository
+
 ```bash
 git clone https://github.com/yourusername/deskai.git
 cd deskai
 ```
 
 ### 2. Install dependencies
+
 ```bash
 npm install
 ```
 
 ### 3. Environment setup
+
 ```bash
 cp .example.env .env
 # Edit .env with your configuration
 ```
 
 ### 4. Database setup
+
 ```bash
 # Create PostgreSQL database
 createdb deskai_db
@@ -58,6 +62,7 @@ npm run db:push
 ```
 
 ### 5. Start development server
+
 ```bash
 npm run dev
 ```
@@ -92,6 +97,7 @@ npm run update-pro-plan # Update Pro plan
 ### Code Quality
 
 This project uses:
+
 - **ESLint** for code linting
 - **Prettier** for code formatting
 - **TypeScript** for type safety
@@ -124,6 +130,7 @@ deskai/
 ### Quick Start
 
 1. **Environment Configuration**
+
    ```bash
    cp .example.env .env
    # Configure all required environment variables
@@ -193,18 +200,21 @@ For detailed schema documentation, see [DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md
 ## 🔌 API Endpoints
 
 ### Public Endpoints
+
 - `GET /api/subscription-plans` - Available plans
 - `GET /api/downloads/stats` - Download statistics
 - `GET /health` - Health check
 - `GET /ready` - Readiness check
 
 ### Protected Endpoints
+
 - `GET /api/subscription` - User subscription
 - `GET /api/usage-stats` - Usage statistics
 - `PUT /api/profile` - Update profile
 - `POST /api/upload-profile-picture` - Upload profile picture
 
 ### Authentication Endpoints
+
 - `POST /api/auth/login` - User login
 - `POST /api/auth/register` - User registration
 - `GET /api/auth/google` - Google OAuth
