@@ -10,7 +10,7 @@ import {
   TrendingUp,
   RefreshCw,
 } from 'lucide-react';
-import multiScreenVideo from '@/assets/hunch_demo_laptop.webm';
+import multiScreenVideo from '@/assets/hunch_detection.webm';
 import focusTimerVideo from '@/assets/demo_timer_small.webm';
 import blinkDetectionVideo from '@/assets/blink_detection.webm';
 
