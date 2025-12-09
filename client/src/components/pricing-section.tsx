@@ -61,8 +61,11 @@ export function PricingSection() {
 
     try {
       await stripeUtils.redirectToCheckout(planId);
-    } catch (error) {
-      alert('Failed to start checkout. Please try again.');
+    } catch (error: any) {
+      const errorMessage =
+        error?.message || 'Failed to start checkout. Please try again.';
+      console.error('Checkout error:', error);
+      alert(errorMessage);
     } finally {
       setLoading(false);
       setSelectedPlan(null);
@@ -136,9 +139,24 @@ export function PricingSection() {
               <Button
                 className="w-full py-3 border-2 border-primary text-primary hover:bg-primary hover:text-white"
                 variant="outline"
-                onClick={() => (window.location.href = '/auth')}
+                onClick={() => {
+                  const proPlan = displayPlans.find(p => p.name === 'Pro');
+                  if (proPlan) {
+                    handlePlanSelect(proPlan.id);
+                  } else if (!isAuthenticated) {
+                    window.location.href = '/auth';
+                  }
+                }}
+                disabled={loading && selectedPlan !== null}
               >
-                Start Free Trial
+                {loading && selectedPlan !== null ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  'Start Free Trial'
+                )}
               </Button>
             </CardContent>
           </Card>
