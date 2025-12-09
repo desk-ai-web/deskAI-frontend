@@ -83,7 +83,7 @@ export default function TermsPage() {
             </p>
             <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
               <li>
-                <strong>Free Trial:</strong> 14-day free trial period
+                <strong>Free Trial:</strong> 7-day free trial period
               </li>
               <li>
                 <strong>Pro Plan:</strong> €2.99/month after trial period

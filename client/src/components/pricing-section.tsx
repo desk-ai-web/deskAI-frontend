@@ -125,7 +125,6 @@ export function PricingSection() {
                   'Smart reminders',
                   'Integrated focus timer',
                   'Progress analytics',
-                  'Basic support',
                 ].map((feature, index) => (
                   <li key={index} className="flex items-center space-x-3">
                     <Check className="w-5 h-5 text-secondary" />
@@ -208,7 +207,7 @@ export function PricingSection() {
                     ) : plan.name === 'Team' ? (
                       'Contact Sales'
                     ) : (
-                      'Start 14-Day Trial'
+                      'Start 7-Day Trial'
                     )}
                   </Button>
                 </CardContent>

@@ -9,7 +9,9 @@ if (import.meta.env.MODE === 'development' && !stripePublishableKey) {
   console.warn('Warning: VITE_STRIPE_PUBLISHABLE_KEY is not set');
 }
 
-const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
+const stripePromise = stripePublishableKey
+  ? loadStripe(stripePublishableKey)
+  : null;
 
 export { stripePromise };
 
@@ -18,17 +20,33 @@ export const stripeUtils = {
   // Redirect to Stripe checkout
   async redirectToCheckout(planId: string): Promise<void> {
     try {
+      const token = localStorage.getItem('deskai_jwt') || undefined;
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(getApiUrl('/api/create-checkout-session'), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({ planId }),
         credentials: 'include',
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create checkout session');
+        let errorMessage = 'Failed to create checkout session';
+        try {
+          const errorData = await response.json();
+          if (errorData.message) {
+            errorMessage = errorData.message;
+          }
+        } catch {
+          // If JSON parsing fails, use status text
+          errorMessage = response.statusText || errorMessage;
+        }
+        throw new Error(errorMessage);
       }
 
       const responseData = await response.json();
@@ -47,16 +65,32 @@ export const stripeUtils = {
   // Redirect to Stripe customer portal
   async redirectToPortal(): Promise<void> {
     try {
+      const token = localStorage.getItem('deskai_jwt') || undefined;
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(getApiUrl('/api/create-portal-session'), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         credentials: 'include',
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create portal session');
+        let errorMessage = 'Failed to create portal session';
+        try {
+          const errorData = await response.json();
+          if (errorData.message) {
+            errorMessage = errorData.message;
+          }
+        } catch {
+          // If JSON parsing fails, use status text
+          errorMessage = response.statusText || errorMessage;
+        }
+        throw new Error(errorMessage);
       }
 
       const responseData = await response.json();
@@ -84,7 +118,14 @@ export const stripeUtils = {
     };
   }> {
     try {
+      const token = localStorage.getItem('deskai_jwt') || undefined;
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(getApiUrl('/api/subscription'), {
+        headers,
         credentials: 'include',
       });
 
@@ -110,19 +151,19 @@ export const stripeUtils = {
     if (!subscription) {
       return false;
     }
-    
+
     // If status is explicitly 'trialing', they're on trial
     // If status is 'active', they're a paying customer (even if trialEnd exists as historical data)
     if (subscription.status === 'active') {
       return false;
     }
-    
+
     if (subscription.status === 'trialing' && subscription.trialEnd) {
       const trialEnd = new Date(subscription.trialEnd);
       const now = new Date();
       return trialEnd > now;
     }
-    
+
     return false;
   },
 
@@ -131,7 +172,7 @@ export const stripeUtils = {
     if (!subscription) {
       return false;
     }
-    
+
     return ['active', 'trialing'].includes(subscription.status);
   },
 

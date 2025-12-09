@@ -76,7 +76,7 @@ export default function ResourcesPage() {
           </Link>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Resources</h1>
           <p className="text-gray-600">
-            Science-backed information about screen habits and health
+            How your screen habits affect your health
           </p>
         </div>
 
@@ -210,17 +210,10 @@ export default function ResourcesPage() {
                   but it's not. However, people often forget to blink when they
                   focus on a screen {renderCitations('[7, 11]')}. We believe
                   that the best solution for this problem should remind you to
-                  blink when you forget to. That is why the Blink Detection by
-                  desk.ai tracks your blinks in real-time. After a while this
-                  conditions automatic blinking before the reminder shows up,
-                  leading to a higher blink-rate.
-                </p>
-                <p>
-                  Additionally, we offer the simple <b>20-20-20 rule</b>, which
-                  is effective at minimizing eye strain{' '}
-                  {renderCitations('[11]')}. Activating this rule will remind
-                  you every 20 minutes to look at something that is 20 ft (6 m)
-                  away for 20 seconds to give your eyes regular breaks.
+                  blink when you forget to. That is why the{' '}
+                  <b>Blink Detection</b> by desk.ai tracks your blinks in
+                  real-time. After a while this conditions automatic blinking
+                  before the reminder shows up, leading to a higher blink-rate.
                 </p>
               </div>
               <div className="clear-both"></div>

@@ -1,4 +1,4 @@
-import { SiX, SiGithub, SiLinkedin } from 'react-icons/si';
+import { SiLinkedin } from 'react-icons/si';
 import { Link } from 'wouter';
 import logoIcon from '@/assets/icon_with_background.png';
 import { useCookieConsent } from '@/hooks/useCookieConsent';
@@ -32,23 +32,7 @@ export function Footer() {
             </p>
             <div className="flex space-x-4">
               <a
-                href="https://twitter.com/deskai_app"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-600 hover:text-primary transition-colors"
-              >
-                <SiX className="w-5 h-5" />
-              </a>
-              <a
-                href="https://github.com/desk-ai"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-600 hover:text-primary transition-colors"
-              >
-                <SiGithub className="w-5 h-5" />
-              </a>
-              <a
-                href="https://linkedin.com/company/desk-ai"
+                href="https://www.linkedin.com/company/desk-ai-app"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-600 hover:text-primary transition-colors"

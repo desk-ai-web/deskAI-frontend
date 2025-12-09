@@ -1,18 +1,18 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
-  CreditCard, 
-  Calendar, 
-  AlertTriangle, 
-  CheckCircle, 
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  CreditCard,
+  Calendar,
+  AlertTriangle,
+  CheckCircle,
   Clock,
-  Loader2 
-} from "lucide-react";
-import { stripeUtils } from "@/lib/stripe";
-import { useIsMobile } from "@/hooks/use-mobile";
+  Loader2,
+} from 'lucide-react';
+import { stripeUtils } from '@/lib/stripe';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface SubscriptionData {
   id: string;
@@ -23,7 +23,9 @@ interface SubscriptionData {
 }
 
 export function SubscriptionManager() {
-  const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
+  const [subscription, setSubscription] = useState<SubscriptionData | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [portalLoading, setPortalLoading] = useState(false);
   const isMobile = useIsMobile();
@@ -49,10 +51,14 @@ export function SubscriptionManager() {
       await stripeUtils.redirectToPortal();
     } catch (error: any) {
       // Check if it's a portal configuration error
-      if (error.message?.includes('No configuration provided') || 
-          error.message?.includes('default configuration has not been created') ||
-          error.message?.includes('Billing portal is not configured')) {
-        alert('Billing portal is not configured yet. Please contact support or try again later.');
+      if (
+        error.message?.includes('No configuration provided') ||
+        error.message?.includes('default configuration has not been created') ||
+        error.message?.includes('Billing portal is not configured')
+      ) {
+        alert(
+          'Billing portal is not configured yet. Please contact support or try again later.'
+        );
       } else {
         alert('Failed to open billing portal. Please try again.');
       }
@@ -65,7 +71,7 @@ export function SubscriptionManager() {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
@@ -123,14 +129,15 @@ export function SubscriptionManager() {
           <Alert>
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-                              You don&apos;t have an active subscription. 
-              <Button 
-                variant="link" 
+              You don&apos;t have an active subscription.
+              <Button
+                variant="link"
                 className="p-0 h-auto font-normal"
-                onClick={() => window.location.href = '/#pricing'}
+                onClick={() => (window.location.href = '/#pricing')}
               >
                 View our plans
-              </Button> to get started.
+              </Button>{' '}
+              to get started.
             </AlertDescription>
           </Alert>
         </CardContent>
@@ -164,7 +171,10 @@ export function SubscriptionManager() {
         {isOnTrial && trialDaysRemaining !== null && (
           <div className="flex items-center space-x-2 mb-3 text-sm">
             <Clock className="w-4 h-4 text-blue-500" />
-            <span>You have <strong>{trialDaysRemaining} days</strong> remaining in your trial.</span>
+            <span>
+              You have <strong>{trialDaysRemaining} days</strong> remaining in
+              your trial.
+            </span>
           </div>
         )}
 
@@ -175,24 +185,33 @@ export function SubscriptionManager() {
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <div>
-                  <p className="text-xs text-gray-600">Period Start</p>
-                  <p className="text-sm font-medium">{formatDate(subscription.currentPeriodStart)}</p>
+                  <p className="text-xs text-gray-600">
+                    {isOnTrial ? 'Started' : 'Period Start'}
+                  </p>
+                  <p className="text-sm font-medium">
+                    {formatDate(subscription.currentPeriodStart)}
+                  </p>
                 </div>
-                <div>
-                  <p className="text-xs text-gray-600">Period End</p>
-                  <p className="text-sm font-medium">{formatDate(subscription.currentPeriodEnd)}</p>
-                </div>
+                {isOnTrial && subscription.trialEnd ? (
+                  <div>
+                    <p className="text-xs text-gray-600">Trial Ends</p>
+                    <p className="text-sm font-medium">
+                      {formatDate(subscription.trialEnd)}
+                    </p>
+                  </div>
+                ) : (
+                  <div>
+                    <p className="text-xs text-gray-600">Period End</p>
+                    <p className="text-sm font-medium">
+                      {formatDate(subscription.currentPeriodEnd)}
+                    </p>
+                  </div>
+                )}
               </div>
-              {subscription.trialEnd && (
-                <div>
-                  <p className="text-xs text-gray-600">Trial Ends</p>
-                  <p className="text-sm font-medium">{formatDate(subscription.trialEnd)}</p>
-                </div>
-              )}
             </div>
 
             {/* Manage Billing Button - Full width on mobile */}
-            <Button 
+            <Button
               onClick={handleManageBilling}
               disabled={portalLoading}
               size="sm"
@@ -207,7 +226,7 @@ export function SubscriptionManager() {
                 </>
               )}
             </Button>
-            
+
             {/* Additional Info - Centered on mobile */}
             <div className="text-xs text-gray-500 text-center space-y-1">
               <div>• Manage subscription, payment methods</div>
@@ -219,19 +238,28 @@ export function SubscriptionManager() {
           /* Desktop Layout */
           <div className="flex items-end justify-between mb-2">
             {/* Billing Period - Compact Grid */}
-            <div className="grid grid-cols-3 gap-3 flex-1">
+            <div className="grid grid-cols-2 gap-3 flex-1">
               <div>
-                <p className="text-xs text-gray-600">Period Start</p>
-                <p className="text-sm font-medium">{formatDate(subscription.currentPeriodStart)}</p>
+                <p className="text-xs text-gray-600">
+                  {isOnTrial ? 'Started' : 'Period Start'}
+                </p>
+                <p className="text-sm font-medium">
+                  {formatDate(subscription.currentPeriodStart)}
+                </p>
               </div>
-              <div>
-                <p className="text-xs text-gray-600">Period End</p>
-                <p className="text-sm font-medium">{formatDate(subscription.currentPeriodEnd)}</p>
-              </div>
-              {subscription.trialEnd && (
+              {isOnTrial && subscription.trialEnd ? (
                 <div>
                   <p className="text-xs text-gray-600">Trial Ends</p>
-                  <p className="text-sm font-medium">{formatDate(subscription.trialEnd)}</p>
+                  <p className="text-sm font-medium">
+                    {formatDate(subscription.trialEnd)}
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <p className="text-xs text-gray-600">Period End</p>
+                  <p className="text-sm font-medium">
+                    {formatDate(subscription.currentPeriodEnd)}
+                  </p>
                 </div>
               )}
             </div>
@@ -239,7 +267,7 @@ export function SubscriptionManager() {
             {/* Manage Billing Button and Info - Stacked on the right */}
             <div className="ml-4 flex-shrink-0 text-right">
               {/* Manage Billing Button - Colored */}
-              <Button 
+              <Button
                 onClick={handleManageBilling}
                 disabled={portalLoading}
                 size="sm"
@@ -254,7 +282,7 @@ export function SubscriptionManager() {
                   </>
                 )}
               </Button>
-              
+
               {/* Additional Info - Below the button */}
               <div className="text-xs text-gray-500">
                 <div>• Manage subscription, payment methods</div>

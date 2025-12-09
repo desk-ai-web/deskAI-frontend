@@ -84,8 +84,11 @@ export function HeroSection() {
     setLoading(true);
     try {
       await stripeUtils.redirectToCheckout(proPlanId);
-    } catch (error) {
-      alert('Failed to start checkout. Please try again.');
+    } catch (error: any) {
+      const errorMessage =
+        error?.message || 'Failed to start checkout. Please try again.';
+      console.error('Checkout error:', error);
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
